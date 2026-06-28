@@ -2,6 +2,7 @@ import { isDatabaseConfigured } from "@/lib/db";
 import { createLead } from "@/lib/leads";
 import { getBusinessByWidgetKey } from "@/lib/businesses";
 import type { Urgency } from "@/lib/lead-types";
+import { isBusinessSubscriptionActive } from "@/lib/stripe-config";
 import { NextResponse } from "next/server";
 
 const URGENCY_VALUES: Urgency[] = ["Low", "Medium", "High"];
@@ -98,6 +99,13 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { error: "This widget is not active." },
       { status: 404 },
+    );
+  }
+
+  if (!isBusinessSubscriptionActive(business)) {
+    return NextResponse.json(
+      { error: "This widget is temporarily unavailable." },
+      { status: 403 },
     );
   }
 

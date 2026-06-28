@@ -7,6 +7,10 @@ CREATE TABLE IF NOT EXISTS businesses (
   slug TEXT NOT NULL UNIQUE,
   widget_key TEXT NOT NULL UNIQUE,
   notification_email TEXT,
+  subscription_status TEXT NOT NULL DEFAULT 'active'
+    CHECK (subscription_status IN ('inactive', 'active', 'trialing', 'past_due', 'canceled')),
+  stripe_customer_id TEXT,
+  stripe_subscription_id TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -36,3 +40,4 @@ CREATE TABLE IF NOT EXISTS leads (
 
 CREATE INDEX IF NOT EXISTS leads_business_created_idx ON leads (business_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS users_business_id_idx ON users (business_id);
+CREATE INDEX IF NOT EXISTS businesses_stripe_customer_idx ON businesses (stripe_customer_id);

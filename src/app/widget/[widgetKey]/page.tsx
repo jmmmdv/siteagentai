@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { WebsiteAssistant } from "@/components/WebsiteAssistant";
 import { getBusinessByWidgetKey } from "@/lib/businesses";
 import { isDatabaseConfigured } from "@/lib/db";
+import { isBusinessSubscriptionActive } from "@/lib/stripe-config";
 
 export const metadata: Metadata = {
   title: "AI Website Employee",
@@ -23,7 +24,7 @@ export default async function WidgetPage({ params }: WidgetPageProps) {
   }
 
   const business = await getBusinessByWidgetKey(widgetKey);
-  if (!business) {
+  if (!business || !isBusinessSubscriptionActive(business)) {
     notFound();
   }
 

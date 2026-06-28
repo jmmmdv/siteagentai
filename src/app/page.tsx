@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { PilotSubscribeButton } from "@/components/PilotSubscribeButton";
 import { WebsiteAssistant } from "@/components/WebsiteAssistant";
 import { getDefaultBusiness } from "@/lib/businesses";
 import { isDatabaseConfigured } from "@/lib/db";
+import { isStripeConfigured } from "@/lib/stripe-config";
 
 const features = [
   {
@@ -63,6 +65,7 @@ const pilotMailto =
 
 export default async function Home() {
   let widgetKey: string | null = null;
+  const stripeEnabled = isStripeConfigured();
 
   if (isDatabaseConfigured()) {
     try {
@@ -272,7 +275,9 @@ export default async function Home() {
                     <span className="text-lg text-slate-400">/ month</span>
                   </div>
                   <p className="mt-2 text-sm text-slate-500">
-                    Early pilot pricing — no payment required to request a spot.
+                    {stripeEnabled
+                      ? "Subscribe securely with Stripe after signing in to your owner account."
+                      : "Early pilot pricing — no payment required to request a spot."}
                   </p>
                 </div>
 
@@ -298,12 +303,10 @@ export default async function Home() {
                     business owners who want to stop missing website leads and
                     follow up faster.
                   </p>
-                  <a
-                    href={pilotMailto}
-                    className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-cyan-500 px-8 py-4 text-base font-bold text-slate-950 transition-colors hover:bg-cyan-400 sm:w-auto"
-                  >
-                    Request early pilot
-                  </a>
+                  <PilotSubscribeButton
+                    stripeEnabled={stripeEnabled}
+                    mailtoHref={pilotMailto}
+                  />
                   <p className="mt-4 text-center text-xs text-slate-500 sm:text-left">
                     Or{" "}
                     <a
@@ -326,12 +329,26 @@ export default async function Home() {
             <p className="text-sm text-slate-500">
               © 2026 SiteAgentAI — MVP Demo
             </p>
-            <Link
-              href="/login"
-              className="text-sm text-slate-500 transition-colors hover:text-slate-300"
-            >
-              Owner login
-            </Link>
+            <div className="flex flex-wrap items-center justify-center gap-4 sm:justify-end">
+              <Link
+                href="/privacy"
+                className="text-sm text-slate-500 transition-colors hover:text-slate-300"
+              >
+                Privacy
+              </Link>
+              <Link
+                href="/terms"
+                className="text-sm text-slate-500 transition-colors hover:text-slate-300"
+              >
+                Terms
+              </Link>
+              <Link
+                href="/login"
+                className="text-sm text-slate-500 transition-colors hover:text-slate-300"
+              >
+                Owner login
+              </Link>
+            </div>
           </div>
         </footer>
       </div>

@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import { getDb } from "@/lib/db";
+import { isStripeEnforced } from "@/lib/stripe-config";
 
 export type UserRecord = {
   id: string;
@@ -83,13 +84,15 @@ export async function createBusiness(input: {
   notificationEmail?: string | null;
 }): Promise<string> {
   const sql = getDb();
+  const subscriptionStatus = isStripeEnforced() ? "inactive" : "active";
   const rows = await sql<{ id: string }[]>`
-    INSERT INTO businesses (name, slug, widget_key, notification_email)
+    INSERT INTO businesses (name, slug, widget_key, notification_email, subscription_status)
     VALUES (
       ${input.name.trim()},
       ${input.slug.trim().toLowerCase()},
       ${input.widgetKey},
-      ${input.notificationEmail?.trim() ?? null}
+      ${input.notificationEmail?.trim() ?? null},
+      ${subscriptionStatus}
     )
     RETURNING id
   `;

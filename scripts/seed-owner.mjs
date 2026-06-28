@@ -28,12 +28,13 @@ const passwordHash = await bcrypt.hash(ADMIN_PASSWORD, 12);
 
 try {
   const businesses = await sql`
-    INSERT INTO businesses (name, slug, widget_key, notification_email)
+    INSERT INTO businesses (name, slug, widget_key, notification_email, subscription_status)
     VALUES (
       ${BUSINESS_NAME},
       ${BUSINESS_SLUG},
       ${widgetKey},
-      ${BUSINESS_NOTIFICATION_EMAIL ?? null}
+      ${BUSINESS_NOTIFICATION_EMAIL ?? null},
+      'active'
     )
     ON CONFLICT (slug) DO UPDATE
     SET
