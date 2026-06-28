@@ -1,71 +1,18 @@
 import { isDatabaseConfigured } from "@/lib/db";
 import { createLead } from "@/lib/leads";
 import { getBusinessByWidgetKey } from "@/lib/businesses";
-import type { Urgency } from "@/lib/lead-types";
 import { isBusinessSubscriptionActive } from "@/lib/stripe-config";
 import { NextResponse } from "next/server";
+import { getClientIp, checkRateLimit, rateLimitHeaders } from "@/lib/rate-limit";
+import { validateLeadPayload } from "@/lib/lead-validation";
 
-const URGENCY_VALUES: Urgency[] = ["Low", "Medium", "High"];
-
-type LeadPayload = {
-  name?: string;
-  email?: string;
-  phone?: string;
-  serviceNeeded?: string;
-  urgency?: string;
-  message?: string;
-  website?: string;
-  widgetKey?: string;
+const LEAD_RATE_LIMIT = {
+  maxRequests: 10,
+  windowMs: 10 * 60 * 1000,
 };
 
-function isValidEmail(value: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-}
-
-function parsePayload(body: LeadPayload) {
-  const name = body.name?.trim() ?? "";
-  const email = body.email?.trim() ?? "";
-  const phone = body.phone?.trim() ?? "";
-  const serviceNeeded = body.serviceNeeded?.trim() ?? "";
-  const message = body.message?.trim() ?? "";
-  const urgency = body.urgency?.trim() as Urgency | undefined;
-  const widgetKey = body.widgetKey?.trim() ?? "";
-
-  if (!widgetKey) {
-    return { error: "Widget is not configured for this site." as const };
-  }
-
-  if (!name || !email || !phone || !serviceNeeded || !message) {
-    return { error: "All fields are required." as const };
-  }
-
-  if (!isValidEmail(email)) {
-    return { error: "Please enter a valid email address." as const };
-  }
-
-  if (!urgency || !URGENCY_VALUES.includes(urgency)) {
-    return { error: "Please select a valid urgency level." as const };
-  }
-
-  if (name.length > 120 || email.length > 254 || phone.length > 40) {
-    return { error: "One or more fields are too long." as const };
-  }
-
-  if (serviceNeeded.length > 200 || message.length > 2000) {
-    return { error: "Service or message is too long." as const };
-  }
-
-  return {
-    data: {
-      name,
-      email,
-      phone,
-      serviceNeeded,
-      urgency,
-      message,
-      widgetKey,
-    },
-  };
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
 export async function POST(request: Request) {
@@ -76,36 +23,54 @@ export async function POST(request: Request) {
     );
   }
 
-  let body: LeadPayload;
+  const clientIp = getClientIp(request.headers);
+  const rateLimit = checkRateLimit(`leads:${clientIp}`, LEAD_RATE_LIMIT);
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please wait a few minutes and try again." },
+      { status: 429, headers: rateLimitHeaders(rateLimit) },
+    );
+  }
+
+  let body: unknown;
 
   try {
-    body = (await request.json()) as LeadPayload;
+    body = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid request body." },
+      { status: 400, headers: rateLimitHeaders(rateLimit) },
+    );
   }
 
-  if (body.website?.trim()) {
-    return NextResponse.json({ success: true });
+  if (isRecord(body) && typeof body.website === "string" && body.website.trim()) {
+    return NextResponse.json(
+      { success: true },
+      { headers: rateLimitHeaders(rateLimit) },
+    );
   }
 
-  const parsed = parsePayload(body);
+  const parsed = validateLeadPayload(body);
 
   if ("error" in parsed) {
-    return NextResponse.json({ error: parsed.error }, { status: 400 });
+    return NextResponse.json(
+      { error: parsed.error },
+      { status: 400, headers: rateLimitHeaders(rateLimit) },
+    );
   }
 
   const business = await getBusinessByWidgetKey(parsed.data.widgetKey);
   if (!business) {
     return NextResponse.json(
       { error: "This widget is not active." },
-      { status: 404 },
+      { status: 404, headers: rateLimitHeaders(rateLimit) },
     );
   }
 
   if (!isBusinessSubscriptionActive(business)) {
     return NextResponse.json(
       { error: "This widget is temporarily unavailable." },
-      { status: 403 },
+      { status: 403, headers: rateLimitHeaders(rateLimit) },
     );
   }
 
@@ -121,12 +86,15 @@ export async function POST(request: Request) {
       },
       business.id,
     );
-    return NextResponse.json({ success: true, id: lead.id });
+    return NextResponse.json(
+      { success: true, id: lead.id },
+      { headers: rateLimitHeaders(rateLimit) },
+    );
   } catch (error) {
     console.error("Failed to create lead:", error);
     return NextResponse.json(
       { error: "Unable to save your request. Please try again." },
-      { status: 500 },
+      { status: 500, headers: rateLimitHeaders(rateLimit) },
     );
   }
 }

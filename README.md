@@ -20,6 +20,30 @@ It turns passive websites into 24/7 lead-capturing assistants: visitors describe
 
 **Demo flow for prospects:** Click **Talk to AI Employee** → submit the form → sign in at `/login` → view the lead in `/admin`.
 
+## Demo
+
+SiteAgentAI is demo-ready for showing the core lead-capture flow:
+
+1. Open the homepage.
+2. Click **Talk to AI Employee**.
+3. Submit a test service request.
+4. Sign in to `/admin`.
+5. Review the saved lead, summary, recommended next action, and widget embed code.
+
+### Screenshots
+
+Screenshots are not committed yet. Before a public launch or investor/customer
+demo, add images to `docs/screenshots/` and update this section with:
+
+| Screen | Suggested file |
+|--------|----------------|
+| Homepage with widget closed | `docs/screenshots/homepage.png` |
+| Lead capture widget | `docs/screenshots/widget.png` |
+| Owner dashboard | `docs/screenshots/admin-dashboard.png` |
+
+Keep screenshots free of real customer data, real emails, API keys, database
+URLs, and private dashboard information.
+
 ## Tech stack
 
 - Next.js App Router
@@ -45,6 +69,24 @@ The repo includes `.env.example` with **placeholder values only**. Copy it local
 ## Local setup
 
 **Requirements:** Node.js 18+, a Postgres database (local Docker or Neon)
+
+### Fast local setup with Docker
+
+If you have Docker installed, the helper script creates a local Postgres
+container, writes generated local-only credentials to `.env.local`, runs the
+schema, and seeds the owner account:
+
+```bash
+npm install
+bash scripts/setup-local.sh
+npm run dev
+```
+
+For safety, the script does **not** print the generated password. The local
+owner email and password are stored in `.env.local` as `ADMIN_EMAIL` and
+`ADMIN_PASSWORD`.
+
+### Manual setup
 
 ```bash
 npm install
@@ -127,6 +169,21 @@ psql "$DATABASE_URL" -f scripts/init-db.sql
 3. Sign in at `/login` with your seeded owner account
 4. Confirm the lead appears in `/admin` with contact info, summary, and next action
 
+## Known Production Limitations
+
+This repository is suitable for MVP demos, private pilots, and technical review.
+It is not yet hardened for real customer data at scale.
+
+Before serving real users, add:
+
+- Provider-backed rate limiting for lead submission and login attempts
+- Stronger authentication flows such as password reset, account lockout, and optional MFA
+- A formal database migration system and backup/restore process
+- Error monitoring, structured logs, uptime checks, and alerting
+- Customer-specific allowed domains for widget iframe embedding
+- Clear data retention, deletion, and export workflows for lead/customer PII
+- A dependency-audit upgrade plan when safe upstream fixes are available
+
 ## Scripts
 
 ```bash
@@ -134,6 +191,7 @@ npm run dev         # Start development server
 npm run build       # Production build
 npm run start       # Start production server
 npm run lint        # Run ESLint
+npm run test        # Run unit tests
 npm run seed:owner  # Create/update owner account (requires env vars)
 ```
 
