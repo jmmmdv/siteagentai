@@ -26,8 +26,16 @@ const initialForm: LeadForm = {
 const inputClassName =
   "w-full min-h-11 rounded-xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 sm:text-sm";
 
-export function WebsiteAssistant() {
-  const [isOpen, setIsOpen] = useState(false);
+type WebsiteAssistantProps = {
+  widgetKey?: string | null;
+  defaultOpen?: boolean;
+};
+
+export function WebsiteAssistant({
+  widgetKey,
+  defaultOpen = false,
+}: WebsiteAssistantProps) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -43,6 +51,14 @@ export function WebsiteAssistant() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSubmitError(null);
+
+    if (!widgetKey) {
+      setSubmitError(
+        "Lead capture is not configured yet. The business owner needs to connect their widget key.",
+      );
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -57,6 +73,7 @@ export function WebsiteAssistant() {
           urgency: form.urgency,
           message: form.message,
           website: form.website,
+          widgetKey,
         }),
       });
 

@@ -1,4 +1,5 @@
 import { generateLeadSummary } from "@/lib/ai-summary";
+import { getBusinessById } from "@/lib/businesses";
 import { getDb, isDatabaseConfigured } from "@/lib/db";
 import { sendLeadNotificationEmail } from "@/lib/email";
 import { formatRelativeTime } from "@/lib/format-relative-time";
@@ -16,6 +17,7 @@ type LeadRow = {
   ai_summary: string;
   recommended_action: string;
   created_at: Date;
+  business_id: string;
 };
 
 function mapRowToLead(row: LeadRow): Lead {
@@ -33,7 +35,7 @@ function mapRowToLead(row: LeadRow): Lead {
   };
 }
 
-export async function getLeads(): Promise<Lead[]> {
+export async function getLeads(businessId: string): Promise<Lead[]> {
   if (!isDatabaseConfigured()) {
     return [];
   }
@@ -51,8 +53,10 @@ export async function getLeads(): Promise<Lead[]> {
       status,
       ai_summary,
       recommended_action,
-      created_at
+      created_at,
+      business_id
     FROM leads
+    WHERE business_id = ${businessId}
     ORDER BY created_at DESC
     LIMIT 100
   `;
@@ -60,12 +64,17 @@ export async function getLeads(): Promise<Lead[]> {
   return rows.map(mapRowToLead);
 }
 
-export async function createLead(input: CreateLeadInput): Promise<Lead> {
+export async function createLead(
+  input: CreateLeadInput,
+  businessId: string,
+): Promise<Lead> {
   const sql = getDb();
   const { aiSummary, recommendedAction } = await generateLeadSummary(input);
+  const business = await getBusinessById(businessId);
 
   const rows = await sql<LeadRow[]>`
     INSERT INTO leads (
+      business_id,
       name,
       email,
       phone,
@@ -75,6 +84,7 @@ export async function createLead(input: CreateLeadInput): Promise<Lead> {
       ai_summary,
       recommended_action
     ) VALUES (
+      ${businessId},
       ${input.name.trim()},
       ${input.email.trim().toLowerCase()},
       ${input.phone.trim()},
@@ -95,13 +105,17 @@ export async function createLead(input: CreateLeadInput): Promise<Lead> {
       status,
       ai_summary,
       recommended_action,
-      created_at
+      created_at,
+      business_id
   `;
 
   const lead = mapRowToLead(rows[0]);
 
   try {
-    await sendLeadNotificationEmail(lead);
+    await sendLeadNotificationEmail(
+      lead,
+      business?.notificationEmail ?? process.env.OWNER_NOTIFICATION_EMAIL ?? null,
+    );
   } catch (error) {
     console.error("Failed to send lead notification email:", error);
   }

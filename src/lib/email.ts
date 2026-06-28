@@ -2,13 +2,17 @@ import { Resend } from "resend";
 import type { Lead } from "@/lib/lead-types";
 
 export function isEmailConfigured(): boolean {
-  return Boolean(
-    process.env.RESEND_API_KEY && process.env.OWNER_NOTIFICATION_EMAIL,
-  );
+  return Boolean(process.env.RESEND_API_KEY);
 }
 
-export async function sendLeadNotificationEmail(lead: Lead): Promise<void> {
-  if (!isEmailConfigured()) {
+export async function sendLeadNotificationEmail(
+  lead: Lead,
+  notificationEmail: string | null,
+): Promise<void> {
+  const toEmail =
+    notificationEmail?.trim() || process.env.OWNER_NOTIFICATION_EMAIL?.trim();
+
+  if (!isEmailConfigured() || !toEmail) {
     return;
   }
 
@@ -18,7 +22,7 @@ export async function sendLeadNotificationEmail(lead: Lead): Promise<void> {
 
   await resend.emails.send({
     from: fromEmail,
-    to: process.env.OWNER_NOTIFICATION_EMAIL!,
+    to: toEmail,
     subject: `New lead: ${lead.serviceNeeded} (${lead.urgency} urgency)`,
     text: [
       "New SiteAgentAI lead",

@@ -1,5 +1,6 @@
 import { isDatabaseConfigured } from "@/lib/db";
 import { createLead } from "@/lib/leads";
+import { getBusinessByWidgetKey } from "@/lib/businesses";
 import type { Urgency } from "@/lib/lead-types";
 import { NextResponse } from "next/server";
 
@@ -13,6 +14,7 @@ type LeadPayload = {
   urgency?: string;
   message?: string;
   website?: string;
+  widgetKey?: string;
 };
 
 function isValidEmail(value: string): boolean {
@@ -26,6 +28,11 @@ function parsePayload(body: LeadPayload) {
   const serviceNeeded = body.serviceNeeded?.trim() ?? "";
   const message = body.message?.trim() ?? "";
   const urgency = body.urgency?.trim() as Urgency | undefined;
+  const widgetKey = body.widgetKey?.trim() ?? "";
+
+  if (!widgetKey) {
+    return { error: "Widget is not configured for this site." as const };
+  }
 
   if (!name || !email || !phone || !serviceNeeded || !message) {
     return { error: "All fields are required." as const };
@@ -55,6 +62,7 @@ function parsePayload(body: LeadPayload) {
       serviceNeeded,
       urgency,
       message,
+      widgetKey,
     },
   };
 }
@@ -85,8 +93,26 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: parsed.error }, { status: 400 });
   }
 
+  const business = await getBusinessByWidgetKey(parsed.data.widgetKey);
+  if (!business) {
+    return NextResponse.json(
+      { error: "This widget is not active." },
+      { status: 404 },
+    );
+  }
+
   try {
-    const lead = await createLead(parsed.data);
+    const lead = await createLead(
+      {
+        name: parsed.data.name,
+        email: parsed.data.email,
+        phone: parsed.data.phone,
+        serviceNeeded: parsed.data.serviceNeeded,
+        urgency: parsed.data.urgency,
+        message: parsed.data.message,
+      },
+      business.id,
+    );
     return NextResponse.json({ success: true, id: lead.id });
   } catch (error) {
     console.error("Failed to create lead:", error);

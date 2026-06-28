@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { WebsiteAssistant } from "@/components/WebsiteAssistant";
+import { getDefaultBusiness } from "@/lib/businesses";
+import { isDatabaseConfigured } from "@/lib/db";
 
 const features = [
   {
@@ -59,7 +61,18 @@ const pilotIncludes = [
 const pilotMailto =
   "mailto:info@jlobglobal.com?subject=SiteAgentAI%20Early%20Pilot%20Request&body=Hi%2C%20I%27m%20interested%20in%20the%20SiteAgentAI%20early%20pilot.%0A%0ABusiness%20name%3A%20%0AService%20type%3A%20%0AWebsite%3A%20%0APhone%3A%20";
 
-export default function Home() {
+export default async function Home() {
+  let widgetKey: string | null = null;
+
+  if (isDatabaseConfigured()) {
+    try {
+      const business = await getDefaultBusiness();
+      widgetKey = business?.widgetKey ?? null;
+    } catch (error) {
+      console.error("Failed to load default business widget:", error);
+    }
+  }
+
   return (
     <>
       <div className="min-h-screen bg-slate-950 pb-28 text-white sm:pb-32">
@@ -76,11 +89,11 @@ export default function Home() {
             </Link>
             <nav className="flex items-center gap-2 sm:gap-4">
               <Link
-                href="/admin"
+                href="/login"
                 className="min-h-11 inline-flex items-center text-sm text-slate-400 transition-colors hover:text-white"
               >
-                <span className="sm:hidden">Admin</span>
-                <span className="hidden sm:inline">Admin preview</span>
+                <span className="sm:hidden">Login</span>
+                <span className="hidden sm:inline">Owner login</span>
               </Link>
               <a
                 href="#demo"
@@ -121,7 +134,7 @@ export default function Home() {
                 1. Try the lead widget
               </a>
               <Link
-                href="/admin"
+                href="/login"
                 className="inline-flex min-h-12 items-center justify-center rounded-xl border border-slate-700 px-8 py-4 text-base font-semibold text-slate-300 transition-colors hover:border-slate-600 hover:text-white"
               >
                 2. View owner dashboard
@@ -220,10 +233,10 @@ export default function Home() {
                 </span>
               </p>
               <Link
-                href="/admin"
+                href="/login"
                 className="inline-flex min-h-12 flex-1 items-center justify-center rounded-xl bg-cyan-500 px-8 py-4 text-base font-bold text-slate-950 transition-colors hover:bg-cyan-400 sm:max-w-xs"
               >
-                Open owner dashboard
+                Owner login
               </Link>
             </div>
           </div>
@@ -314,16 +327,16 @@ export default function Home() {
               © 2026 SiteAgentAI — MVP Demo
             </p>
             <Link
-              href="/admin"
+              href="/login"
               className="text-sm text-slate-500 transition-colors hover:text-slate-300"
             >
-              Admin preview
+              Owner login
             </Link>
           </div>
         </footer>
       </div>
 
-      <WebsiteAssistant />
+      <WebsiteAssistant widgetKey={widgetKey} />
     </>
   );
 }

@@ -1,61 +1,70 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getServerSession } from "next-auth";
+import { AdminSignOutButton } from "@/components/AdminSignOutButton";
+import { EmbedCodeCard } from "@/components/EmbedCodeCard";
 import { LeadCard } from "@/components/LeadCard";
 import { isAiConfigured } from "@/lib/ai-summary";
+import { authOptions } from "@/lib/auth-options";
+import { getAppUrl } from "@/lib/businesses";
 import { isDatabaseConfigured } from "@/lib/db";
+import type { Lead } from "@/lib/lead-types";
 import { getLeads } from "@/lib/leads";
-import { sampleLeads } from "@/lib/sample-leads";
 
 export const metadata: Metadata = {
-  title: "Admin Preview",
+  title: "Owner Dashboard",
   description: "Leads dashboard for SiteAgentAI",
 };
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
-  const dbConfigured = isDatabaseConfigured();
+  const session = await getServerSession(authOptions);
+  const businessId = session?.user.businessId ?? "";
+  const businessName = session?.user.businessName ?? "Your business";
+  const widgetKey = session?.user.widgetKey ?? "";
   const aiConfigured = isAiConfigured();
-  let liveLeads = sampleLeads;
-  let usingSampleData = true;
+  const dbConfigured = isDatabaseConfigured();
+
+  let liveLeads: Lead[] = [];
   let loadError: string | null = null;
 
-  if (dbConfigured) {
+  if (dbConfigured && businessId) {
     try {
-      liveLeads = await getLeads();
-      usingSampleData = false;
+      liveLeads = await getLeads(businessId);
     } catch (error) {
       console.error("Failed to load leads:", error);
       loadError =
-        "Unable to load live leads. Check DATABASE_URL and run scripts/init-db.sql.";
-      liveLeads = sampleLeads;
-      usingSampleData = true;
+        "Unable to load leads. Check DATABASE_URL and run scripts/migrate-phase3.sql.";
     }
   }
 
   const newLeads = liveLeads.filter((lead) => lead.status === "New").length;
   const highUrgency = liveLeads.filter((lead) => lead.urgency === "High").length;
+  const appUrl = getAppUrl();
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-4 sm:px-6">
           <Link href="/" className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-cyan-500/20 text-sm font-bold text-cyan-400">
               SA
             </div>
             <div>
               <p className="text-sm font-bold text-white">SiteAgentAI</p>
-              <p className="text-xs text-slate-500">Owner Dashboard</p>
+              <p className="text-xs text-slate-500">{businessName}</p>
             </div>
           </Link>
-          <Link
-            href="/"
-            className="min-h-11 shrink-0 rounded-lg border border-slate-700 px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:border-slate-600 hover:text-white sm:px-4"
-          >
-            <span className="sm:hidden">← Back</span>
-            <span className="hidden sm:inline">← Back to demo</span>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/"
+              className="hidden min-h-11 items-center rounded-lg border border-slate-700 px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:border-slate-600 hover:text-white sm:inline-flex sm:px-4"
+            >
+              Demo site
+            </Link>
+            <AdminSignOutButton />
+          </div>
         </div>
       </header>
 
@@ -63,49 +72,42 @@ export default async function AdminPage() {
         <div className="mb-8">
           <div className="flex flex-wrap items-center gap-3">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-cyan-400">
-              {usingSampleData ? "Demo Dashboard" : "Live Dashboard"}
+              Owner Dashboard
             </p>
-            <span
-              className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${
-                usingSampleData
-                  ? "border-amber-500/30 bg-amber-500/10 text-amber-300"
-                  : "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
-              }`}
-            >
-              {usingSampleData ? "Sample data" : "Live leads"}
+            <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-300">
+              Live account
             </span>
           </div>
           <h1 className="mt-2 text-3xl font-bold sm:text-4xl">Leads Overview</h1>
           <p className="mt-2 max-w-2xl text-slate-400">
-            Every website inquiry in one place — contact details, urgency, an
-            AI summary of what the customer needs, and the recommended next step
-            for your team.
+            Signed in as {session?.user.email}. Leads from your website widget
+            appear here with AI summaries and recommended next steps.
           </p>
           {loadError && (
             <p className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
               {loadError}
             </p>
           )}
-          {!dbConfigured && (
-            <p className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
-              Connect <code className="text-amber-100">DATABASE_URL</code> to
-              save widget submissions and show live leads here.
-            </p>
-          )}
-          {dbConfigured && (
-            <p
-              className={`mt-4 rounded-xl border px-4 py-3 text-sm ${
-                aiConfigured
-                  ? "border-cyan-500/30 bg-cyan-500/10 text-cyan-200"
-                  : "border-slate-700 bg-slate-900/60 text-slate-400"
-              }`}
-            >
-              {aiConfigured
-                ? "AI summaries enabled — new leads use OpenAI for summary and next steps."
-                : "Rule-based summaries active — add OPENAI_API_KEY for GPT-powered summaries."}
-            </p>
-          )}
+          <p
+            className={`mt-4 rounded-xl border px-4 py-3 text-sm ${
+              aiConfigured
+                ? "border-cyan-500/30 bg-cyan-500/10 text-cyan-200"
+                : "border-slate-700 bg-slate-900/60 text-slate-400"
+            }`}
+          >
+            {aiConfigured
+              ? "AI summaries enabled for new leads."
+              : "Rule-based summaries active — add OPENAI_API_KEY for GPT summaries."}
+          </p>
         </div>
+
+        {widgetKey && (
+          <EmbedCodeCard
+            appUrl={appUrl}
+            widgetKey={widgetKey}
+            businessName={businessName}
+          />
+        )}
 
         <div className="mb-10 grid gap-4 sm:grid-cols-3">
           <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
@@ -134,15 +136,17 @@ export default async function AdminPage() {
           <div className="rounded-2xl border border-dashed border-slate-700 bg-slate-900/40 px-6 py-12 text-center">
             <p className="text-lg font-semibold text-white">No leads yet</p>
             <p className="mt-2 text-sm text-slate-400">
-              Submit a test lead from the homepage widget. It will appear here
-              automatically.
+              Embed your widget on your website or submit a test lead from your
+              widget page.
             </p>
-            <Link
-              href="/"
-              className="mt-6 inline-flex min-h-12 items-center justify-center rounded-xl bg-cyan-500 px-6 py-3 text-sm font-bold text-slate-950 transition-colors hover:bg-cyan-400"
-            >
-              Go to homepage widget
-            </Link>
+            {widgetKey && (
+              <Link
+                href={`/widget/${widgetKey}`}
+                className="mt-6 inline-flex min-h-12 items-center justify-center rounded-xl bg-cyan-500 px-6 py-3 text-sm font-bold text-slate-950 transition-colors hover:bg-cyan-400"
+              >
+                Open your widget page
+              </Link>
+            )}
           </div>
         ) : (
           <div className="space-y-5">
