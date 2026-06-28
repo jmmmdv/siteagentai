@@ -46,13 +46,13 @@ export function LeadCard({ lead }: LeadCardProps) {
           <p className="text-xs font-medium uppercase tracking-wider text-slate-500">
             Email
           </p>
-          <p className="mt-0.5 text-sm text-slate-300">{lead.email}</p>
+          <p className="mt-0.5 break-all text-sm text-slate-300">{lead.email}</p>
         </div>
         <div>
           <p className="text-xs font-medium uppercase tracking-wider text-slate-500">
             Phone
           </p>
-          <p className="mt-0.5 text-sm text-slate-300">{lead.phone}</p>
+          <p className="mt-0.5 break-all text-sm text-slate-300">{lead.phone}</p>
         </div>
         <div className="sm:col-span-2">
           <p className="text-xs font-medium uppercase tracking-wider text-slate-500">

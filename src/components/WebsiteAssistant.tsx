@@ -23,7 +23,7 @@ const initialForm: LeadForm = {
 };
 
 const inputClassName =
-  "w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20";
+  "w-full min-h-11 rounded-xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 sm:text-sm";
 
 export function WebsiteAssistant() {
   const [isOpen, setIsOpen] = useState(false);
@@ -94,8 +94,8 @@ export function WebsiteAssistant() {
               className="max-h-[60vh] space-y-3 overflow-y-auto p-5"
             >
               <p className="text-xs leading-relaxed text-slate-500">
-                Share a few details below. The business team will receive your
-                request with a clear summary.
+                A quick form — usually under a minute. The business owner
+                receives your details and an AI summary of your request.
               </p>
 
               <div>
@@ -201,7 +201,7 @@ export function WebsiteAssistant() {
 
               <button
                 type="submit"
-                className="w-full rounded-xl bg-cyan-500 px-4 py-3.5 text-sm font-bold text-slate-950 transition-colors hover:bg-cyan-400"
+                className="w-full min-h-12 rounded-xl bg-cyan-500 px-4 py-3.5 text-sm font-bold text-slate-950 transition-colors hover:bg-cyan-400"
               >
                 Send my request
               </button>
@@ -220,28 +220,29 @@ export function WebsiteAssistant() {
                 </p>
                 <div className="mt-3 space-y-2 text-sm leading-relaxed text-slate-600">
                   <p className="font-medium text-slate-700">
-                    What happens next:
+                    What the business owner receives:
                   </p>
-                  <ol className="list-decimal space-y-1 pl-4">
-                    <li>The business team is notified of your request.</li>
+                  <ul className="list-disc space-y-1 pl-4">
                     <li>
-                      They receive an AI summary of your needs and urgency.
+                      Your contact details (name, email, and phone)
                     </li>
                     <li>
-                      Someone will follow up using the contact details you
-                      provided.
+                      An AI-written summary of your service request and urgency
                     </li>
-                  </ol>
+                    <li>
+                      A recommended next step so they can follow up quickly
+                    </li>
+                  </ul>
                 </div>
                 <p className="mt-3 text-xs text-slate-500">
-                  This is a live demo — no data is stored or sent yet.
+                  Demo only — this test submission is not stored or emailed yet.
                 </p>
               </div>
 
               <button
                 type="button"
                 onClick={handleReset}
-                className="mt-4 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+                className="mt-4 w-full min-h-12 rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
               >
                 Submit another request
               </button>
@@ -255,12 +256,14 @@ export function WebsiteAssistant() {
         onClick={handleToggle}
         aria-expanded={isOpen}
         aria-controls="website-assistant-panel"
-        className={`flex items-center gap-2 rounded-full bg-cyan-500 px-5 py-3.5 text-sm font-bold text-slate-950 shadow-xl shadow-cyan-500/25 transition-all hover:bg-cyan-400 hover:shadow-cyan-400/30 sm:px-6 sm:py-4 ${!isOpen ? "widget-trigger-pulse" : ""}`}
+        className={`flex min-h-12 max-w-[calc(100vw-2rem)] items-center gap-2 rounded-full bg-cyan-500 px-4 py-3.5 text-sm font-bold text-slate-950 shadow-xl shadow-cyan-500/25 transition-all hover:bg-cyan-400 hover:shadow-cyan-400/30 sm:max-w-none sm:px-6 sm:py-4 ${!isOpen ? "widget-trigger-pulse" : ""}`}
       >
-        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-950/20 text-xs">
+        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-950/20 text-xs">
           ✦
         </span>
-        {isOpen ? "Close" : "Talk to AI Employee"}
+        <span className="truncate">
+          {isOpen ? "Close" : "Talk to AI Employee"}
+        </span>
       </button>
     </div>
   );

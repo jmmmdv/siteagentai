@@ -66,13 +66,14 @@ export default function Home() {
             <nav className="flex items-center gap-2 sm:gap-4">
               <Link
                 href="/admin"
-                className="text-sm text-slate-400 transition-colors hover:text-white"
+                className="min-h-11 inline-flex items-center text-sm text-slate-400 transition-colors hover:text-white"
               >
-                Admin preview
+                <span className="sm:hidden">Admin</span>
+                <span className="hidden sm:inline">Admin preview</span>
               </Link>
               <a
                 href="#demo"
-                className="rounded-lg bg-cyan-500 px-3 py-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-cyan-400 sm:px-4"
+                className="inline-flex min-h-11 items-center rounded-lg bg-cyan-500 px-3 py-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-cyan-400 sm:px-4"
               >
                 Try the demo
               </a>
@@ -81,7 +82,7 @@ export default function Home() {
         </header>
 
         {/* Hero */}
-        <section className="relative overflow-hidden px-6 pb-20 pt-16 sm:pb-28 sm:pt-24">
+        <section className="relative overflow-hidden px-4 pb-20 pt-16 sm:px-6 sm:pb-28 sm:pt-24">
           <div className="pointer-events-none absolute inset-0">
             <div className="absolute left-1/2 top-0 h-[500px] w-[800px] -translate-x-1/2 rounded-full bg-cyan-500/10 blur-3xl" />
           </div>
@@ -91,33 +92,37 @@ export default function Home() {
               AI Website Employee
             </p>
             <h1 className="mt-6 max-w-3xl text-4xl font-black leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-              Turn website visitors into{" "}
-              <span className="text-cyan-400">qualified leads</span> — automatically.
+              An AI employee on your website that{" "}
+              <span className="text-cyan-400">captures leads</span> for you.
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-slate-400">
-              SiteAgentAI is an AI-powered website assistant for small service
-              businesses. It captures leads, summarizes requests, and tells you
-              exactly what to do next — so you never miss a customer again.
+              SiteAgentAI gives small service businesses a floating website
+              assistant. Visitors describe what they need, leave their contact
+              info, and you receive a ready-to-act lead with an AI summary and
+              recommended follow-up.
             </p>
 
-            <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center">
+            <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
               <a
                 href="#demo"
-                className="inline-flex items-center justify-center rounded-xl bg-cyan-500 px-8 py-4 text-base font-bold text-slate-950 transition-colors hover:bg-cyan-400"
+                className="inline-flex min-h-12 items-center justify-center rounded-xl bg-cyan-500 px-8 py-4 text-base font-bold text-slate-950 transition-colors hover:bg-cyan-400"
               >
-                Try the live demo
+                1. Try the lead widget
               </a>
               <Link
                 href="/admin"
-                className="inline-flex items-center justify-center rounded-xl border border-slate-700 px-8 py-4 text-base font-semibold text-slate-300 transition-colors hover:border-slate-600 hover:text-white"
+                className="inline-flex min-h-12 items-center justify-center rounded-xl border border-slate-700 px-8 py-4 text-base font-semibold text-slate-300 transition-colors hover:border-slate-600 hover:text-white"
               >
-                View admin dashboard
+                2. View owner dashboard
               </Link>
             </div>
 
             <p className="mt-6 text-sm text-slate-500">
-              Click &ldquo;Talk to AI Employee&rdquo; in the bottom-right corner to
-              test the lead capture flow.
+              Step 1: click{" "}
+              <span className="font-medium text-slate-400">
+                Talk to AI Employee
+              </span>{" "}
+              in the bottom-right corner and submit a test request.
             </p>
           </div>
         </section>
@@ -183,30 +188,31 @@ export default function Home() {
         {/* CTA */}
         <section
           id="demo"
-          className="border-t border-slate-800/60 px-6 py-20"
+          className="border-t border-slate-800/60 px-4 py-20 sm:px-6"
         >
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="text-3xl font-bold sm:text-4xl">
-              See it in action right now
+              Try the demo in 2 minutes
             </h2>
             <p className="mt-4 text-lg text-slate-400">
-              Click the button below to open the AI Website Employee widget and
-              submit a test lead. Then check the admin dashboard to see how leads
-              appear for the business owner.
+              Submit a test lead as a visitor, then open the owner dashboard to
+              see how SiteAgentAI presents the request to your team.
             </p>
-            <div className="mt-8 flex flex-col items-center gap-4">
-              <p className="max-w-md rounded-2xl border border-slate-800 bg-slate-900/60 px-6 py-4 text-sm text-slate-300">
-                Use the{" "}
-                <span className="font-semibold text-cyan-400">
-                  Talk to AI Employee
-                </span>{" "}
-                button in the bottom-right corner to submit a test lead.
+            <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:justify-center sm:gap-4">
+              <p className="flex min-h-12 flex-1 items-center justify-center rounded-2xl border border-slate-800 bg-slate-900/60 px-6 py-4 text-sm text-slate-300 sm:max-w-sm">
+                <span>
+                  Open{" "}
+                  <span className="font-semibold text-cyan-400">
+                    Talk to AI Employee
+                  </span>{" "}
+                  ↘ and submit a test lead
+                </span>
               </p>
               <Link
                 href="/admin"
-                className="inline-flex items-center justify-center rounded-xl border border-slate-700 px-8 py-4 text-base font-semibold text-slate-300 transition-colors hover:border-slate-600 hover:text-white"
+                className="inline-flex min-h-12 flex-1 items-center justify-center rounded-xl bg-cyan-500 px-8 py-4 text-base font-bold text-slate-950 transition-colors hover:bg-cyan-400 sm:max-w-xs"
               >
-                View sample admin dashboard →
+                Open owner dashboard
               </Link>
             </div>
           </div>

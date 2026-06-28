@@ -29,9 +29,10 @@ export default function AdminPage() {
           </Link>
           <Link
             href="/"
-            className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-medium text-slate-300 transition-colors hover:border-slate-600 hover:text-white"
+            className="min-h-11 shrink-0 rounded-lg border border-slate-700 px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:border-slate-600 hover:text-white sm:px-4"
           >
-            ← Back to demo
+            <span className="sm:hidden">← Back</span>
+            <span className="hidden sm:inline">← Back to demo</span>
           </Link>
         </div>
       </header>
@@ -48,8 +49,9 @@ export default function AdminPage() {
           </div>
           <h1 className="mt-2 text-3xl font-bold sm:text-4xl">Leads Overview</h1>
           <p className="mt-2 max-w-2xl text-slate-400">
-            This is a preview of what business owners would see — AI-summarized
-            leads with recommended next actions.
+            Every website inquiry in one place — contact details, urgency, an
+            AI summary of what the customer needs, and the recommended next step
+            for your team.
           </p>
         </div>
 
