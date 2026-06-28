@@ -1,0 +1,237 @@
+"use client";
+
+import { type FormEvent, useState } from "react";
+
+type Urgency = "Low" | "Medium" | "High";
+
+type LeadForm = {
+  name: string;
+  email: string;
+  phone: string;
+  serviceNeeded: string;
+  urgency: Urgency;
+  message: string;
+};
+
+const initialForm: LeadForm = {
+  name: "",
+  email: "",
+  phone: "",
+  serviceNeeded: "",
+  urgency: "Medium",
+  message: "",
+};
+
+const inputClassName =
+  "w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20";
+
+export function WebsiteAssistant() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [form, setForm] = useState<LeadForm>(initialForm);
+
+  function updateField(field: keyof LeadForm, value: string) {
+    setForm((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setIsSubmitted(true);
+  }
+
+  function handleClose() {
+    setIsOpen(false);
+  }
+
+  function handleReset() {
+    setForm(initialForm);
+    setIsSubmitted(false);
+  }
+
+  return (
+    <div className="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6">
+      {isOpen && (
+        <div className="mb-3 w-[calc(100vw-2rem)] max-w-[380px] overflow-hidden rounded-2xl border border-slate-700/50 bg-white shadow-2xl shadow-black/40 sm:mb-4">
+          <div className="relative bg-slate-950 p-5 text-white">
+            <button
+              type="button"
+              onClick={handleClose}
+              aria-label="Close assistant"
+              className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
+            >
+              ✕
+            </button>
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/20 text-lg">
+                ✦
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-400">
+                  SiteAgentAI
+                </p>
+                <h3 className="text-base font-bold">AI Website Employee</h3>
+              </div>
+            </div>
+            <p className="mt-3 text-sm leading-relaxed text-slate-400">
+              Hi! Tell me what you need and I&apos;ll make sure the team gets
+              your request with a clear summary.
+            </p>
+          </div>
+
+          {!isSubmitted ? (
+            <form
+              onSubmit={handleSubmit}
+              className="max-h-[60vh] space-y-3 overflow-y-auto p-5"
+            >
+              <div>
+                <label htmlFor="lead-name" className="sr-only">
+                  Your name
+                </label>
+                <input
+                  id="lead-name"
+                  required
+                  placeholder="Your name"
+                  value={form.name}
+                  onChange={(event) => updateField("name", event.target.value)}
+                  className={inputClassName}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="lead-email" className="sr-only">
+                  Email address
+                </label>
+                <input
+                  id="lead-email"
+                  required
+                  type="email"
+                  placeholder="Email address"
+                  value={form.email}
+                  onChange={(event) =>
+                    updateField("email", event.target.value)
+                  }
+                  className={inputClassName}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="lead-phone" className="sr-only">
+                  Phone number
+                </label>
+                <input
+                  id="lead-phone"
+                  required
+                  type="tel"
+                  placeholder="Phone number"
+                  value={form.phone}
+                  onChange={(event) =>
+                    updateField("phone", event.target.value)
+                  }
+                  className={inputClassName}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="lead-service" className="sr-only">
+                  Service needed
+                </label>
+                <input
+                  id="lead-service"
+                  required
+                  placeholder="Service needed (e.g. AC repair)"
+                  value={form.serviceNeeded}
+                  onChange={(event) =>
+                    updateField("serviceNeeded", event.target.value)
+                  }
+                  className={inputClassName}
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="lead-urgency"
+                  className="mb-1.5 block text-xs font-medium text-slate-500"
+                >
+                  How urgent is this?
+                </label>
+                <select
+                  id="lead-urgency"
+                  value={form.urgency}
+                  onChange={(event) =>
+                    updateField("urgency", event.target.value as Urgency)
+                  }
+                  className={inputClassName}
+                >
+                  <option>Low</option>
+                  <option>Medium</option>
+                  <option>High</option>
+                </select>
+              </div>
+
+              <div>
+                <label htmlFor="lead-message" className="sr-only">
+                  Message details
+                </label>
+                <textarea
+                  id="lead-message"
+                  required
+                  placeholder="Tell us a little more about what you need..."
+                  value={form.message}
+                  onChange={(event) =>
+                    updateField("message", event.target.value)
+                  }
+                  className={`${inputClassName} min-h-24 resize-none`}
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full rounded-xl bg-cyan-500 px-4 py-3.5 text-sm font-bold text-slate-950 transition-colors hover:bg-cyan-400"
+              >
+                Send my request
+              </button>
+            </form>
+          ) : (
+            <div className="p-5">
+              <div className="rounded-2xl border border-cyan-200 bg-cyan-50 p-5">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-cyan-500 text-xl text-white">
+                  ✓
+                </div>
+                <h4 className="mt-4 text-lg font-bold text-slate-950">
+                  Thank you, {form.name || "there"}!
+                </h4>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                  Your request has been captured. In the full product, the
+                  business owner would receive your details along with an
+                  AI-generated lead summary and recommended next steps.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleReset}
+                className="mt-4 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+              >
+                Submit another request
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      <button
+        type="button"
+        onClick={() => setIsOpen((current) => !current)}
+        className="flex items-center gap-2 rounded-full bg-cyan-500 px-5 py-3.5 text-sm font-bold text-slate-950 shadow-xl shadow-cyan-500/25 transition-all hover:bg-cyan-400 hover:shadow-cyan-400/30 sm:px-6 sm:py-4"
+      >
+        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-950/20 text-xs">
+          ✦
+        </span>
+        {isOpen ? "Close" : "Talk to AI Employee"}
+      </button>
+    </div>
+  );
+}
