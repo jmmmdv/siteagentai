@@ -14,6 +14,12 @@ export const metadata: Metadata = {
   },
   description:
     "Turn website visitors into qualified leads with an AI-powered website assistant built for small service businesses.",
+  openGraph: {
+    title: "SiteAgentAI — AI Website Employee",
+    description:
+      "Turn website visitors into qualified leads with an AI-powered website assistant built for small service businesses.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({

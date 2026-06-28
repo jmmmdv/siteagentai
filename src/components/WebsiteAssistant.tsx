@@ -46,15 +46,22 @@ export function WebsiteAssistant() {
     setIsOpen(false);
   }
 
+  function handleToggle() {
+    setIsOpen((current) => !current);
+  }
+
   function handleReset() {
     setForm(initialForm);
     setIsSubmitted(false);
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6">
+    <div className="fixed bottom-4 right-4 z-50 pb-[env(safe-area-inset-bottom)] pr-[env(safe-area-inset-right)] sm:bottom-6 sm:right-6">
       {isOpen && (
-        <div className="mb-3 w-[calc(100vw-2rem)] max-w-[380px] overflow-hidden rounded-2xl border border-slate-700/50 bg-white shadow-2xl shadow-black/40 sm:mb-4">
+        <div
+          id="website-assistant-panel"
+          className="mb-3 w-[calc(100vw-2rem)] max-w-[380px] overflow-hidden rounded-2xl border border-slate-700/50 bg-white shadow-2xl shadow-black/40 sm:mb-4"
+        >
           <div className="relative bg-slate-950 p-5 text-white">
             <button
               type="button"
@@ -86,6 +93,11 @@ export function WebsiteAssistant() {
               onSubmit={handleSubmit}
               className="max-h-[60vh] space-y-3 overflow-y-auto p-5"
             >
+              <p className="text-xs leading-relaxed text-slate-500">
+                Share a few details below. The business team will receive your
+                request with a clear summary.
+              </p>
+
               <div>
                 <label htmlFor="lead-name" className="sr-only">
                   Your name
@@ -203,10 +215,26 @@ export function WebsiteAssistant() {
                 <h4 className="mt-4 text-lg font-bold text-slate-950">
                   Thank you, {form.name || "there"}!
                 </h4>
-                <p className="mt-2 text-sm leading-relaxed text-slate-600">
-                  Your request has been captured. In the full product, the
-                  business owner would receive your details along with an
-                  AI-generated lead summary and recommended next steps.
+                <p className="mt-2 text-sm font-medium text-slate-800">
+                  Your request has been received.
+                </p>
+                <div className="mt-3 space-y-2 text-sm leading-relaxed text-slate-600">
+                  <p className="font-medium text-slate-700">
+                    What happens next:
+                  </p>
+                  <ol className="list-decimal space-y-1 pl-4">
+                    <li>The business team is notified of your request.</li>
+                    <li>
+                      They receive an AI summary of your needs and urgency.
+                    </li>
+                    <li>
+                      Someone will follow up using the contact details you
+                      provided.
+                    </li>
+                  </ol>
+                </div>
+                <p className="mt-3 text-xs text-slate-500">
+                  This is a live demo — no data is stored or sent yet.
                 </p>
               </div>
 
@@ -224,8 +252,10 @@ export function WebsiteAssistant() {
 
       <button
         type="button"
-        onClick={() => setIsOpen((current) => !current)}
-        className="flex items-center gap-2 rounded-full bg-cyan-500 px-5 py-3.5 text-sm font-bold text-slate-950 shadow-xl shadow-cyan-500/25 transition-all hover:bg-cyan-400 hover:shadow-cyan-400/30 sm:px-6 sm:py-4"
+        onClick={handleToggle}
+        aria-expanded={isOpen}
+        aria-controls="website-assistant-panel"
+        className={`flex items-center gap-2 rounded-full bg-cyan-500 px-5 py-3.5 text-sm font-bold text-slate-950 shadow-xl shadow-cyan-500/25 transition-all hover:bg-cyan-400 hover:shadow-cyan-400/30 sm:px-6 sm:py-4 ${!isOpen ? "widget-trigger-pulse" : ""}`}
       >
         <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-950/20 text-xs">
           ✦

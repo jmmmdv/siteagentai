@@ -51,28 +51,28 @@ const steps = [
 export default function Home() {
   return (
     <>
-      <div className="min-h-screen bg-slate-950 text-white">
+      <div className="min-h-screen bg-slate-950 pb-28 text-white sm:pb-32">
         {/* Navigation */}
         <header className="sticky top-0 z-40 border-b border-slate-800/60 bg-slate-950/80 backdrop-blur-md">
-          <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-            <div className="flex items-center gap-2.5">
+          <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
+            <Link href="/" className="flex items-center gap-2.5">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-cyan-500/20 text-sm font-bold text-cyan-400">
                 SA
               </div>
               <span className="text-lg font-bold tracking-tight">
                 SiteAgentAI
               </span>
-            </div>
-            <nav className="flex items-center gap-3 sm:gap-4">
+            </Link>
+            <nav className="flex items-center gap-2 sm:gap-4">
               <Link
                 href="/admin"
-                className="hidden text-sm text-slate-400 transition-colors hover:text-white sm:inline"
+                className="text-sm text-slate-400 transition-colors hover:text-white"
               >
                 Admin preview
               </Link>
               <a
                 href="#demo"
-                className="rounded-lg bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-cyan-400"
+                className="rounded-lg bg-cyan-500 px-3 py-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-cyan-400 sm:px-4"
               >
                 Try the demo
               </a>
@@ -194,21 +194,21 @@ export default function Home() {
               submit a test lead. Then check the admin dashboard to see how leads
               appear for the business owner.
             </p>
-            <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-              <p className="rounded-2xl border border-slate-800 bg-slate-900/60 px-6 py-4 text-sm text-slate-300">
-                👇 Look for{" "}
+            <div className="mt-8 flex flex-col items-center gap-4">
+              <p className="max-w-md rounded-2xl border border-slate-800 bg-slate-900/60 px-6 py-4 text-sm text-slate-300">
+                Use the{" "}
                 <span className="font-semibold text-cyan-400">
-                  &ldquo;Talk to AI Employee&rdquo;
+                  Talk to AI Employee
                 </span>{" "}
-                in the bottom-right corner
+                button in the bottom-right corner to submit a test lead.
               </p>
+              <Link
+                href="/admin"
+                className="inline-flex items-center justify-center rounded-xl border border-slate-700 px-8 py-4 text-base font-semibold text-slate-300 transition-colors hover:border-slate-600 hover:text-white"
+              >
+                View sample admin dashboard →
+              </Link>
             </div>
-            <Link
-              href="/admin"
-              className="mt-6 inline-flex items-center justify-center rounded-xl border border-slate-700 px-8 py-4 text-base font-semibold text-slate-300 transition-colors hover:border-slate-600 hover:text-white"
-            >
-              View sample admin dashboard →
-            </Link>
           </div>
         </section>
 
