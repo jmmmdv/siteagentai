@@ -48,6 +48,17 @@ const steps = [
   },
 ];
 
+const pilotIncludes = [
+  "Website AI employee demo widget",
+  "Lead capture flow",
+  "Owner dashboard preview",
+  "AI-style lead summaries",
+  "Recommended next actions",
+];
+
+const pilotMailto =
+  "mailto:info@jlobglobal.com?subject=SiteAgentAI%20Early%20Pilot%20Request&body=Hi%2C%20I%27m%20interested%20in%20the%20SiteAgentAI%20early%20pilot.%0A%0ABusiness%20name%3A%20%0AService%20type%3A%20%0AWebsite%3A%20%0APhone%3A%20";
+
 export default function Home() {
   return (
     <>
@@ -214,6 +225,84 @@ export default function Home() {
               >
                 Open owner dashboard
               </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Early Pilot Offer */}
+        <section
+          id="pilot"
+          className="border-t border-slate-800/60 px-4 py-20 sm:px-6"
+        >
+          <div className="mx-auto max-w-6xl">
+            <div className="overflow-hidden rounded-2xl border border-cyan-500/20 bg-gradient-to-br from-slate-900/80 to-slate-950">
+              <div className="grid gap-8 p-6 sm:p-10 lg:grid-cols-2 lg:items-center lg:gap-12">
+                <div>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-400">
+                      Early Pilot Offer
+                    </p>
+                    <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-xs font-medium text-amber-300">
+                      Limited spots
+                    </span>
+                  </div>
+                  <h2 className="mt-4 text-3xl font-bold sm:text-4xl">
+                    Join the first SiteAgentAI pilots
+                  </h2>
+                  <p className="mt-4 text-lg leading-relaxed text-slate-400">
+                    Built for small service businesses — HVAC, plumbing,
+                    landscaping, roofing, remodeling, and more. Get early access
+                    at a founder price while we onboard our first customers.
+                  </p>
+                  <div className="mt-6 flex items-baseline gap-2">
+                    <span className="text-5xl font-black text-white">$49</span>
+                    <span className="text-lg text-slate-400">/ month</span>
+                  </div>
+                  <p className="mt-2 text-sm text-slate-500">
+                    Early pilot pricing — no payment required to request a spot.
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-6 sm:p-8">
+                  <p className="text-sm font-semibold text-white">
+                    What&apos;s included
+                  </p>
+                  <ul className="mt-4 space-y-3">
+                    {pilotIncludes.map((item) => (
+                      <li
+                        key={item}
+                        className="flex items-start gap-3 text-sm text-slate-300"
+                      >
+                        <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-cyan-500/20 text-xs text-cyan-400">
+                          ✓
+                        </span>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-6 text-sm leading-relaxed text-slate-400">
+                    We&apos;re opening a small number of early pilot spots for
+                    business owners who want to stop missing website leads and
+                    follow up faster.
+                  </p>
+                  <a
+                    href={pilotMailto}
+                    className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-cyan-500 px-8 py-4 text-base font-bold text-slate-950 transition-colors hover:bg-cyan-400 sm:w-auto"
+                  >
+                    Request early pilot
+                  </a>
+                  <p className="mt-4 text-center text-xs text-slate-500 sm:text-left">
+                    Or{" "}
+                    <a
+                      href="#demo"
+                      className="text-cyan-400 underline-offset-2 hover:underline"
+                    >
+                      try the live demo
+                    </a>{" "}
+                    first — no signup needed.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </section>
