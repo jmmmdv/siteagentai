@@ -5,7 +5,6 @@ import { AdminSignOutButton } from "@/components/AdminSignOutButton";
 import { BillingPanel } from "@/components/BillingPanel";
 import { EmbedCodeCard } from "@/components/EmbedCodeCard";
 import { LeadCard } from "@/components/LeadCard";
-import { isAiConfigured } from "@/lib/ai-summary";
 import { authOptions } from "@/lib/auth-options";
 import { getAppUrl, getBusinessById } from "@/lib/businesses";
 import { isDatabaseConfigured } from "@/lib/db";
@@ -33,7 +32,6 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   const businessId = session?.user.businessId ?? "";
   const businessName = session?.user.businessName ?? "Your business";
   const widgetKey = session?.user.widgetKey ?? "";
-  const aiConfigured = isAiConfigured();
   const dbConfigured = isDatabaseConfigured();
   const stripeEnabled = isStripeConfigured();
   const business = businessId ? await getBusinessById(businessId) : null;
@@ -93,27 +91,16 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
               Live account
             </span>
           </div>
-          <h1 className="mt-2 text-3xl font-bold sm:text-4xl">Leads Overview</h1>
+          <h1 className="mt-2 text-3xl font-bold sm:text-4xl">Lead Inbox</h1>
           <p className="mt-2 max-w-2xl text-slate-400">
-            Signed in as {session?.user.email}. Leads from your website widget
-            appear here with AI summaries and recommended next steps.
+            Signed in as {session?.user.email}. Every website submission appears
+            here with contact info, a lead summary, and a recommended follow-up.
           </p>
           {loadError && (
             <p className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
               {loadError}
             </p>
           )}
-          <p
-            className={`mt-4 rounded-xl border px-4 py-3 text-sm ${
-              aiConfigured
-                ? "border-cyan-500/30 bg-cyan-500/10 text-cyan-200"
-                : "border-slate-700 bg-slate-900/60 text-slate-400"
-            }`}
-          >
-            {aiConfigured
-              ? "AI summaries enabled for new leads."
-              : "Rule-based summaries active — add OPENAI_API_KEY for GPT summaries."}
-          </p>
         </div>
 
         {business && (
@@ -158,7 +145,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         </div>
 
         <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-500">
-          Recent leads
+          Incoming leads
         </h2>
 
         {liveLeads.length === 0 ? (

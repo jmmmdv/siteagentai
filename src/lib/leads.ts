@@ -27,6 +27,7 @@ function mapRowToLead(row: LeadRow): Lead {
     email: row.email,
     phone: row.phone,
     serviceNeeded: row.service_needed,
+    message: row.message,
     urgency: row.urgency,
     status: row.status,
     aiSummary: row.ai_summary,

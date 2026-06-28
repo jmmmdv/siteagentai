@@ -147,8 +147,9 @@ export function WebsiteAssistant({
               className="max-h-[60vh] space-y-3 overflow-y-auto p-5"
             >
               <p className="text-xs leading-relaxed text-slate-500">
-                A quick form — usually under a minute. The business owner
-                receives your details and an AI summary of your request.
+                Quick form — name, email, phone, service needed, urgency, and
+                details. The business owner receives your request in their
+                dashboard with a summary and recommended follow-up.
               </p>
 
               <div className="hidden" aria-hidden="true">
@@ -314,8 +315,8 @@ export function WebsiteAssistant({
                   </ul>
                 </div>
                 <p className="mt-3 text-xs text-slate-500">
-                  The business owner has been notified and can view this lead in
-                  their dashboard.
+                  For this demo, the business owner can view this lead after
+                  signing in to the owner dashboard.
                 </p>
               </div>
 

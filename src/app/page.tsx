@@ -1,76 +1,95 @@
 import Link from "next/link";
-import { PilotSubscribeButton } from "@/components/PilotSubscribeButton";
 import { WebsiteAssistant } from "@/components/WebsiteAssistant";
 import { getDefaultBusiness } from "@/lib/businesses";
 import { isDatabaseConfigured } from "@/lib/db";
-import { isStripeConfigured } from "@/lib/stripe-config";
 
-const features = [
+const pilotMailto =
+  "mailto:info@jlobglobal.com?subject=SiteAgentAI%20Early%20Pilot%20Request&body=Hi%2C%20I%27m%20interested%20in%20the%20SiteAgentAI%20early%20pilot.%0A%0ABusiness%20name%3A%20%0AService%20type%3A%20%0AWebsite%3A%20%0APhone%3A%20";
+
+const problems = [
+  "Visitors leave without calling or filling out a long contact form.",
+  "After hours and weekends, nobody is there to answer questions.",
+  "Leads arrive as messy messages with no clear next step.",
+  "Owners lose time figuring out who to call back first.",
+];
+
+const solutions = [
   {
-    title: "Captures leads 24/7",
+    title: "24/7 website assistant",
     description:
-      "Your AI employee never sleeps. Visitors can describe what they need and leave contact info any time of day.",
+      "A floating AI employee invites visitors to describe what they need — any time, on any page.",
     icon: "◎",
   },
   {
-    title: "AI-powered summaries",
+    title: "Structured lead capture",
     description:
-      "Every submission becomes a clear, actionable lead summary — so you know exactly what the customer wants.",
+      "Name, email, phone, service needed, urgency, and details — collected in under a minute.",
+    icon: "▣",
+  },
+  {
+    title: "Owner-ready summaries",
+    description:
+      "Every submission becomes a clear lead summary with a recommended follow-up action.",
     icon: "✦",
-  },
-  {
-    title: "Recommended next steps",
-    description:
-      "Get smart suggestions on how to follow up, what to say, and when to reach out.",
-    icon: "→",
-  },
-  {
-    title: "Built for service businesses",
-    description:
-      "HVAC, plumbing, landscaping, roofing, remodeling — SiteAgentAI speaks your customers' language.",
-    icon: "◈",
   },
 ];
 
 const steps = [
   {
     step: "01",
-    title: "Visitor lands on your site",
-    description: "A floating AI assistant invites them to describe what they need.",
+    title: "Visitor opens the widget",
+    description:
+      "They click Talk to AI Employee and describe what they need in a simple guided form.",
   },
   {
     step: "02",
-    title: "They share their request",
+    title: "SiteAgentAI captures the lead",
     description:
-      "Name, contact info, service needed, urgency, and details — all in one simple form.",
+      "Contact info, service request, urgency, and message details are saved instantly.",
   },
   {
     step: "03",
-    title: "You get a qualified lead",
+    title: "You follow up faster",
     description:
-      "AI summarizes the request and recommends your next action. No missed opportunities.",
+      "The owner dashboard shows a summary and recommended next action — ready to call back.",
   },
 ];
 
-const pilotIncludes = [
-  "Website AI employee demo widget",
-  "Lead capture flow",
-  "Owner dashboard preview",
-  "AI-style lead summaries",
-  "Recommended next actions",
+const ownerReceives = [
+  "Customer name, email, and phone",
+  "Service needed and urgency level",
+  "Full message details from the visitor",
+  "AI-style summary of the request",
+  "Recommended next action for your team",
 ];
 
-const pilotMailto =
-  "mailto:info@jlobglobal.com?subject=SiteAgentAI%20Early%20Pilot%20Request&body=Hi%2C%20I%27m%20interested%20in%20the%20SiteAgentAI%20early%20pilot.%0A%0ABusiness%20name%3A%20%0AService%20type%3A%20%0AWebsite%3A%20%0APhone%3A%20";
+const industries = [
+  { name: "Real estate agents", example: "Buyers, sellers, and rental inquiries" },
+  { name: "Cleaning companies", example: "Recurring service and move-out requests" },
+  { name: "Law offices", example: "Consultation and case intake requests" },
+  { name: "Clinics", example: "Appointment and new patient inquiries" },
+  { name: "Consultants", example: "Discovery calls and project inquiries" },
+  { name: "Home repair", example: "HVAC, plumbing, roofing, and remodeling" },
+  { name: "Transportation", example: "Quotes, bookings, and route requests" },
+];
+
+const pilotIncludes = [
+  "Live website widget for lead capture",
+  "Owner dashboard with lead inbox",
+  "AI-style summaries and next actions",
+  "Embed code for your website",
+  "Early pilot support while we onboard",
+];
 
 export default async function Home() {
   let widgetKey: string | null = null;
-  const stripeEnabled = isStripeConfigured();
+  let demoReady = false;
 
   if (isDatabaseConfigured()) {
     try {
       const business = await getDefaultBusiness();
       widgetKey = business?.widgetKey ?? null;
+      demoReady = Boolean(widgetKey);
     } catch (error) {
       console.error("Failed to load default business widget:", error);
     }
@@ -79,7 +98,6 @@ export default async function Home() {
   return (
     <>
       <div className="min-h-screen bg-slate-950 pb-28 text-white sm:pb-32">
-        {/* Navigation */}
         <header className="sticky top-0 z-40 border-b border-slate-800/60 bg-slate-950/80 backdrop-blur-md">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
             <Link href="/" className="flex items-center gap-2.5">
@@ -90,7 +108,13 @@ export default async function Home() {
                 SiteAgentAI
               </span>
             </Link>
-            <nav className="flex items-center gap-2 sm:gap-4">
+            <nav className="flex items-center gap-2 sm:gap-3">
+              <a
+                href="#pilot"
+                className="hidden min-h-11 items-center text-sm text-slate-400 transition-colors hover:text-white sm:inline-flex"
+              >
+                Pricing
+              </a>
               <Link
                 href="/login"
                 className="min-h-11 inline-flex items-center text-sm text-slate-400 transition-colors hover:text-white"
@@ -102,80 +126,121 @@ export default async function Home() {
                 href="#demo"
                 className="inline-flex min-h-11 items-center rounded-lg bg-cyan-500 px-3 py-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-cyan-400 sm:px-4"
               >
-                Try the demo
+                Try the live demo
               </a>
             </nav>
           </div>
         </header>
 
         {/* Hero */}
-        <section className="relative overflow-hidden px-4 pb-20 pt-16 sm:px-6 sm:pb-28 sm:pt-24">
+        <section className="relative overflow-hidden px-4 pb-16 pt-14 sm:px-6 sm:pb-20 sm:pt-20">
           <div className="pointer-events-none absolute inset-0">
-            <div className="absolute left-1/2 top-0 h-[500px] w-[800px] -translate-x-1/2 rounded-full bg-cyan-500/10 blur-3xl" />
+            <div className="absolute left-1/2 top-0 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-cyan-500/10 blur-3xl" />
           </div>
 
           <div className="relative mx-auto max-w-6xl">
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-400">
-              AI Website Employee
+              Turn passive websites into lead machines
             </p>
-            <h1 className="mt-6 max-w-3xl text-4xl font-black leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-              An AI employee on your website that{" "}
-              <span className="text-cyan-400">captures leads</span> for you.
+            <h1 className="mt-5 max-w-4xl text-4xl font-black leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl">
+              Your website should capture leads{" "}
+              <span className="text-cyan-400">24/7</span> — not just sit there.
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-slate-400">
-              SiteAgentAI gives small service businesses a floating website
-              assistant. Visitors describe what they need, leave their contact
-              info, and you receive a ready-to-act lead with an AI summary and
-              recommended follow-up.
+              SiteAgentAI adds an AI website employee to small service businesses.
+              Visitors describe what they need, leave contact info, and you receive
+              a qualified lead with a summary and recommended follow-up — even
+              after hours.
             </p>
 
-            <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+            <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
               <a
-                href="#demo"
+                href={pilotMailto}
                 className="inline-flex min-h-12 items-center justify-center rounded-xl bg-cyan-500 px-8 py-4 text-base font-bold text-slate-950 transition-colors hover:bg-cyan-400"
               >
-                1. Try the lead widget
+                Request early pilot — $49/mo
               </a>
-              <Link
-                href="/login"
+              <a
+                href="#demo"
                 className="inline-flex min-h-12 items-center justify-center rounded-xl border border-slate-700 px-8 py-4 text-base font-semibold text-slate-300 transition-colors hover:border-slate-600 hover:text-white"
               >
-                2. View owner dashboard
-              </Link>
+                Try the live demo
+              </a>
             </div>
 
-            <p className="mt-6 text-sm text-slate-500">
-              Step 1: click{" "}
-              <span className="font-medium text-slate-400">
-                Talk to AI Employee
-              </span>{" "}
-              in the bottom-right corner and submit a test request.
+            <p className="mt-6 max-w-xl text-sm leading-relaxed text-slate-500">
+              {demoReady ? (
+                <>
+                  <span className="font-medium text-slate-400">Live demo:</span>{" "}
+                  click{" "}
+                  <span className="font-medium text-cyan-400/90">
+                    Talk to AI Employee
+                  </span>{" "}
+                  in the bottom-right corner, submit a test lead, then sign in to
+                  the owner dashboard to see it appear.
+                </>
+              ) : (
+                <>
+                  Demo widget loads when the production database is connected.
+                  Contact us to request an early pilot spot.
+                </>
+              )}
             </p>
           </div>
         </section>
 
-        {/* Features */}
-        <section className="border-t border-slate-800/60 px-6 py-20">
+        {/* Problem */}
+        <section className="border-t border-slate-800/60 px-4 py-16 sm:px-6 sm:py-20">
+          <div className="mx-auto max-w-6xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.25em] text-red-400/90">
+              The problem
+            </p>
+            <h2 className="mt-3 max-w-2xl text-3xl font-bold sm:text-4xl">
+              Most small business websites don&apos;t convert visitors into calls
+            </h2>
+            <ul className="mt-10 grid gap-4 sm:grid-cols-2">
+              {problems.map((item) => (
+                <li
+                  key={item}
+                  className="flex items-start gap-3 rounded-2xl border border-slate-800 bg-slate-900/40 p-5"
+                >
+                  <span className="mt-0.5 text-red-400">✕</span>
+                  <span className="text-sm leading-relaxed text-slate-300">
+                    {item}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        {/* Solution */}
+        <section className="border-t border-slate-800/60 px-4 py-16 sm:px-6 sm:py-20">
           <div className="mx-auto max-w-6xl">
             <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-400">
-              Why SiteAgentAI
+              The solution
             </p>
-            <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
-              Everything a small business needs
+            <h2 className="mt-3 max-w-2xl text-3xl font-bold sm:text-4xl">
+              An AI employee that turns visitors into actionable leads
             </h2>
+            <p className="mt-4 max-w-2xl text-slate-400">
+              SiteAgentAI sits on your website, guides visitors through a short
+              request form, and delivers everything your team needs to follow up
+              fast.
+            </p>
 
-            <div className="mt-12 grid gap-5 sm:grid-cols-2">
-              {features.map((feature) => (
+            <div className="mt-12 grid gap-5 sm:grid-cols-3">
+              {solutions.map((item) => (
                 <div
-                  key={feature.title}
-                  className="rounded-2xl border border-slate-800 bg-slate-900/40 p-6 transition-colors hover:border-slate-700"
+                  key={item.title}
+                  className="rounded-2xl border border-slate-800 bg-slate-900/40 p-6"
                 >
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/15 text-lg text-cyan-400">
-                    {feature.icon}
+                    {item.icon}
                   </div>
-                  <h3 className="mt-4 text-lg font-semibold">{feature.title}</h3>
+                  <h3 className="mt-4 text-lg font-semibold">{item.title}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-slate-400">
-                    {feature.description}
+                    {item.description}
                   </p>
                 </div>
               ))}
@@ -184,20 +249,20 @@ export default async function Home() {
         </section>
 
         {/* How it works */}
-        <section className="border-t border-slate-800/60 px-6 py-20">
+        <section className="border-t border-slate-800/60 px-4 py-16 sm:px-6 sm:py-20">
           <div className="mx-auto max-w-6xl">
             <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-400">
               How it works
             </p>
             <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
-              From visitor to lead in seconds
+              From website visitor to booked job
             </h2>
 
             <div className="mt-12 grid gap-6 sm:grid-cols-3">
               {steps.map((item) => (
                 <div
                   key={item.step}
-                  className="relative rounded-2xl border border-slate-800 bg-slate-900/40 p-6"
+                  className="rounded-2xl border border-slate-800 bg-slate-900/40 p-6"
                 >
                   <span className="text-3xl font-black text-cyan-500/30">
                     {item.step}
@@ -212,28 +277,104 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* CTA */}
+        {/* Who it's for + industries */}
+        <section className="border-t border-slate-800/60 px-4 py-16 sm:px-6 sm:py-20">
+          <div className="mx-auto max-w-6xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-400">
+              Who it&apos;s for
+            </p>
+            <h2 className="mt-3 max-w-2xl text-3xl font-bold sm:text-4xl">
+              Built for local service businesses that live on leads
+            </h2>
+            <p className="mt-4 max-w-2xl text-slate-400">
+              If your business depends on inbound requests, SiteAgentAI helps you
+              capture more of them — without hiring extra staff.
+            </p>
+
+            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {industries.map((industry) => (
+                <div
+                  key={industry.name}
+                  className="rounded-2xl border border-slate-800 bg-slate-900/40 p-5 transition-colors hover:border-slate-700"
+                >
+                  <h3 className="font-semibold text-white">{industry.name}</h3>
+                  <p className="mt-1.5 text-sm text-slate-400">
+                    {industry.example}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* What owner receives */}
+        <section className="border-t border-slate-800/60 px-4 py-16 sm:px-6 sm:py-20">
+          <div className="mx-auto max-w-6xl">
+            <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-400">
+                  What you receive
+                </p>
+                <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
+                  Every lead arrives ready for follow-up
+                </h2>
+                <p className="mt-4 text-slate-400">
+                  No digging through emails or voicemails. The owner dashboard
+                  shows exactly who to call, what they need, and what to do next.
+                </p>
+              </div>
+              <ul className="space-y-3 rounded-2xl border border-slate-800 bg-slate-900/40 p-6 sm:p-8">
+                {ownerReceives.map((item) => (
+                  <li
+                    key={item}
+                    className="flex items-start gap-3 text-sm text-slate-300"
+                  >
+                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-cyan-500/20 text-xs text-cyan-400">
+                      ✓
+                    </span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        {/* Demo CTA */}
         <section
           id="demo"
-          className="border-t border-slate-800/60 px-4 py-20 sm:px-6"
+          className="border-t border-slate-800/60 px-4 py-16 sm:px-6 sm:py-20"
         >
           <div className="mx-auto max-w-3xl text-center">
-            <h2 className="text-3xl font-bold sm:text-4xl">
-              Try the demo in 2 minutes
+            <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-400">
+              Live demo
+            </p>
+            <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
+              See it work in under 2 minutes
             </h2>
             <p className="mt-4 text-lg text-slate-400">
-              Submit a test lead as a visitor, then open the owner dashboard to
-              see how SiteAgentAI presents the request to your team.
+              Play the role of a customer. Submit a test request, then open the
+              owner dashboard to see how SiteAgentAI presents the lead.
             </p>
-            <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:justify-center sm:gap-4">
-              <p className="flex min-h-12 flex-1 items-center justify-center rounded-2xl border border-slate-800 bg-slate-900/60 px-6 py-4 text-sm text-slate-300 sm:max-w-sm">
-                <span>
-                  Open{" "}
-                  <span className="font-semibold text-cyan-400">
-                    Talk to AI Employee
-                  </span>{" "}
-                  ↘ and submit a test lead
-                </span>
+
+            <ol className="mx-auto mt-8 max-w-md space-y-3 text-left text-sm text-slate-300">
+              <li className="flex gap-3 rounded-xl border border-slate-800 bg-slate-900/60 px-4 py-3">
+                <span className="font-bold text-cyan-400">1</span>
+                Click Talk to AI Employee ↘
+              </li>
+              <li className="flex gap-3 rounded-xl border border-slate-800 bg-slate-900/60 px-4 py-3">
+                <span className="font-bold text-cyan-400">2</span>
+                Fill in name, email, phone, service, urgency, and details
+              </li>
+              <li className="flex gap-3 rounded-xl border border-slate-800 bg-slate-900/60 px-4 py-3">
+                <span className="font-bold text-cyan-400">3</span>
+                Sign in to the owner dashboard and view your lead
+              </li>
+            </ol>
+
+            <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:justify-center">
+              <p className="inline-flex min-h-12 flex-1 items-center justify-center rounded-xl border border-slate-700 bg-slate-900/60 px-6 py-4 text-sm font-medium text-slate-300 sm:max-w-xs">
+                Widget is in the bottom-right corner ↘
               </p>
               <Link
                 href="/login"
@@ -245,10 +386,10 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* Early Pilot Offer */}
+        {/* Early pilot pricing */}
         <section
           id="pilot"
-          className="border-t border-slate-800/60 px-4 py-20 sm:px-6"
+          className="border-t border-slate-800/60 px-4 py-16 sm:px-6 sm:py-20"
         >
           <div className="mx-auto max-w-6xl">
             <div className="overflow-hidden rounded-2xl border border-cyan-500/20 bg-gradient-to-br from-slate-900/80 to-slate-950">
@@ -256,28 +397,26 @@ export default async function Home() {
                 <div>
                   <div className="flex flex-wrap items-center gap-3">
                     <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-400">
-                      Early Pilot Offer
+                      Early pilot pricing
                     </p>
                     <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-xs font-medium text-amber-300">
                       Limited spots
                     </span>
                   </div>
                   <h2 className="mt-4 text-3xl font-bold sm:text-4xl">
-                    Join the first SiteAgentAI pilots
+                    Get your AI website employee live
                   </h2>
                   <p className="mt-4 text-lg leading-relaxed text-slate-400">
-                    Built for small service businesses — HVAC, plumbing,
-                    landscaping, roofing, remodeling, and more. Get early access
-                    at a founder price while we onboard our first customers.
+                    We&apos;re onboarding a small group of service business owners
+                    who want to stop missing website leads. Founder pricing while
+                    we refine the product with real customers.
                   </p>
                   <div className="mt-6 flex items-baseline gap-2">
                     <span className="text-5xl font-black text-white">$49</span>
                     <span className="text-lg text-slate-400">/ month</span>
                   </div>
                   <p className="mt-2 text-sm text-slate-500">
-                    {stripeEnabled
-                      ? "Subscribe securely with Stripe after signing in to your owner account."
-                      : "Early pilot pricing — no payment required to request a spot."}
+                    Request a spot — we&apos;ll reply with next steps.
                   </p>
                 </div>
 
@@ -298,24 +437,21 @@ export default async function Home() {
                       </li>
                     ))}
                   </ul>
-                  <p className="mt-6 text-sm leading-relaxed text-slate-400">
-                    We&apos;re opening a small number of early pilot spots for
-                    business owners who want to stop missing website leads and
-                    follow up faster.
-                  </p>
-                  <PilotSubscribeButton
-                    stripeEnabled={stripeEnabled}
-                    mailtoHref={pilotMailto}
-                  />
+                  <a
+                    href={pilotMailto}
+                    className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-cyan-500 px-8 py-4 text-base font-bold text-slate-950 transition-colors hover:bg-cyan-400 sm:w-auto"
+                  >
+                    Request early pilot
+                  </a>
                   <p className="mt-4 text-center text-xs text-slate-500 sm:text-left">
-                    Or{" "}
+                    Prefer to see it first?{" "}
                     <a
                       href="#demo"
                       className="text-cyan-400 underline-offset-2 hover:underline"
                     >
-                      try the live demo
+                      Try the live demo
                     </a>{" "}
-                    first — no signup needed.
+                    — no signup needed.
                   </p>
                 </div>
               </div>
@@ -323,11 +459,10 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* Footer */}
         <footer className="border-t border-slate-800/60 px-6 py-8">
           <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 sm:flex-row">
             <p className="text-sm text-slate-500">
-              © 2026 SiteAgentAI — MVP Demo
+              © 2026 SiteAgentAI — AI Website Employee for service businesses
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4 sm:justify-end">
               <Link

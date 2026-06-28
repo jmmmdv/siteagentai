@@ -20,39 +20,52 @@ type LeadCardProps = {
 export function LeadCard({ lead }: LeadCardProps) {
   return (
     <article className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 transition-colors hover:border-slate-700 sm:p-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex flex-col gap-4 border-b border-slate-800/80 pb-5 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-white">
+          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+            Customer
+          </p>
+          <h3 className="mt-1 text-xl font-semibold text-white">
             {lead.customerName}
           </h3>
-          <p className="mt-1 text-sm text-slate-400">{lead.submittedAt}</p>
+          <p className="mt-1 text-sm text-slate-500">{lead.submittedAt}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <span
-            className={`rounded-full px-3 py-1 text-xs font-medium ${urgencyStyles[lead.urgency]}`}
+            className={`rounded-full px-3 py-1 text-xs font-semibold ${urgencyStyles[lead.urgency]}`}
           >
             {lead.urgency} urgency
           </span>
           <span
-            className={`rounded-full px-3 py-1 text-xs font-medium ${statusStyles[lead.status]}`}
+            className={`rounded-full px-3 py-1 text-xs font-semibold ${statusStyles[lead.status]}`}
           >
             {lead.status}
           </span>
         </div>
       </div>
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+      <div className="mt-5 grid gap-4 sm:grid-cols-2">
         <div>
           <p className="text-xs font-medium uppercase tracking-wider text-slate-500">
             Email
           </p>
-          <p className="mt-0.5 break-all text-sm text-slate-300">{lead.email}</p>
+          <a
+            href={`mailto:${lead.email}`}
+            className="mt-0.5 block break-all text-sm text-cyan-400 hover:underline"
+          >
+            {lead.email}
+          </a>
         </div>
         <div>
           <p className="text-xs font-medium uppercase tracking-wider text-slate-500">
             Phone
           </p>
-          <p className="mt-0.5 break-all text-sm text-slate-300">{lead.phone}</p>
+          <a
+            href={`tel:${lead.phone.replace(/\s/g, "")}`}
+            className="mt-0.5 block break-all text-sm text-cyan-400 hover:underline"
+          >
+            {lead.phone}
+          </a>
         </div>
         <div className="sm:col-span-2">
           <p className="text-xs font-medium uppercase tracking-wider text-slate-500">
@@ -60,6 +73,14 @@ export function LeadCard({ lead }: LeadCardProps) {
           </p>
           <p className="mt-0.5 text-sm font-medium text-white">
             {lead.serviceNeeded}
+          </p>
+        </div>
+        <div className="sm:col-span-2">
+          <p className="text-xs font-medium uppercase tracking-wider text-slate-500">
+            Message / details
+          </p>
+          <p className="mt-0.5 text-sm leading-relaxed text-slate-300">
+            {lead.message}
           </p>
         </div>
       </div>
@@ -70,7 +91,7 @@ export function LeadCard({ lead }: LeadCardProps) {
             ✦
           </span>
           <p className="text-xs font-semibold uppercase tracking-wider text-cyan-400">
-            AI Summary
+            Lead summary
           </p>
         </div>
         <p className="mt-2 text-sm leading-relaxed text-slate-300">
@@ -78,11 +99,11 @@ export function LeadCard({ lead }: LeadCardProps) {
         </p>
       </div>
 
-      <div className="mt-4 rounded-xl border border-slate-700/80 bg-slate-800/40 p-4">
-        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+      <div className="mt-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4">
+        <p className="text-xs font-semibold uppercase tracking-wider text-emerald-400">
           Recommended next action
         </p>
-        <p className="mt-2 text-sm leading-relaxed text-slate-200">
+        <p className="mt-2 text-sm font-medium leading-relaxed text-slate-200">
           {lead.recommendedAction}
         </p>
       </div>

@@ -8,6 +8,7 @@ export type Lead = {
   email: string;
   phone: string;
   serviceNeeded: string;
+  message: string;
   urgency: Urgency;
   status: LeadStatus;
   aiSummary: string;

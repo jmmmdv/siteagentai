@@ -9,6 +9,8 @@ export const sampleLeads: Lead[] = [
     email: "sarah.mitchell@gmail.com",
     phone: "(512) 555-0142",
     serviceNeeded: "Emergency AC repair",
+    message:
+      "Our AC stopped working last night during the heat wave. The unit is about 8 years old and making clicking sounds. We're home all day and prefer an afternoon visit if possible.",
     urgency: "High",
     status: "New",
     aiSummary:
@@ -23,6 +25,8 @@ export const sampleLeads: Lead[] = [
     email: "j.rodriguez@outlook.com",
     phone: "(512) 555-0287",
     serviceNeeded: "Kitchen remodel consultation",
+    message:
+      "We want to remodel our 150 sq ft kitchen with quartz countertops and open shelving. Budget is roughly $25K–$35K and we'd like to start in 6–8 weeks.",
     urgency: "Medium",
     status: "Contacted",
     aiSummary:
@@ -37,6 +41,8 @@ export const sampleLeads: Lead[] = [
     email: "emily.chen@yahoo.com",
     phone: "(512) 555-0391",
     serviceNeeded: "Roof inspection after storm",
+    message:
+      "We had hail damage on the south-facing roof after last week's storm. I have photos and may need to file an insurance claim. Can someone inspect before we call the insurer?",
     urgency: "High",
     status: "Qualified",
     aiSummary:
@@ -51,6 +57,8 @@ export const sampleLeads: Lead[] = [
     email: "mthompson@workmail.com",
     phone: "(512) 555-0518",
     serviceNeeded: "Lawn care — recurring service",
+    message:
+      "New homeowner looking for weekly lawn maintenance on a 0.25-acre lot — mowing, edging, and seasonal fertilization. Reliable service matters more than the lowest price.",
     urgency: "Low",
     status: "New",
     aiSummary:
@@ -65,6 +73,8 @@ export const sampleLeads: Lead[] = [
     email: "lisa.park@gmail.com",
     phone: "(512) 555-0673",
     serviceNeeded: "Water heater replacement",
+    message:
+      "Our 50-gallon gas water heater is 12 years old with rust at the base. No active leak yet. Interested in both a standard replacement quote and a tankless upgrade option.",
     urgency: "Medium",
     status: "Closed",
     aiSummary:
