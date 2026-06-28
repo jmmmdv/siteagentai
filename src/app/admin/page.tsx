@@ -1,18 +1,38 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LeadCard } from "@/components/LeadCard";
+import { isDatabaseConfigured } from "@/lib/db";
+import { getLeads } from "@/lib/leads";
 import { sampleLeads } from "@/lib/sample-leads";
 
 export const metadata: Metadata = {
   title: "Admin Preview",
-  description: "Sample leads dashboard preview for SiteAgentAI",
+  description: "Leads dashboard for SiteAgentAI",
 };
 
-export default function AdminPage() {
-  const newLeads = sampleLeads.filter((lead) => lead.status === "New").length;
-  const highUrgency = sampleLeads.filter(
-    (lead) => lead.urgency === "High",
-  ).length;
+export const dynamic = "force-dynamic";
+
+export default async function AdminPage() {
+  const dbConfigured = isDatabaseConfigured();
+  let liveLeads = sampleLeads;
+  let usingSampleData = true;
+  let loadError: string | null = null;
+
+  if (dbConfigured) {
+    try {
+      liveLeads = await getLeads();
+      usingSampleData = false;
+    } catch (error) {
+      console.error("Failed to load leads:", error);
+      loadError =
+        "Unable to load live leads. Check DATABASE_URL and run scripts/init-db.sql.";
+      liveLeads = sampleLeads;
+      usingSampleData = true;
+    }
+  }
+
+  const newLeads = liveLeads.filter((lead) => lead.status === "New").length;
+  const highUrgency = liveLeads.filter((lead) => lead.urgency === "High").length;
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
@@ -24,7 +44,7 @@ export default function AdminPage() {
             </div>
             <div>
               <p className="text-sm font-bold text-white">SiteAgentAI</p>
-              <p className="text-xs text-slate-500">Admin Preview</p>
+              <p className="text-xs text-slate-500">Owner Dashboard</p>
             </div>
           </Link>
           <Link
@@ -41,10 +61,16 @@ export default function AdminPage() {
         <div className="mb-8">
           <div className="flex flex-wrap items-center gap-3">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-cyan-400">
-              Demo Dashboard
+              {usingSampleData ? "Demo Dashboard" : "Live Dashboard"}
             </p>
-            <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-xs font-medium text-amber-300">
-              Sample data
+            <span
+              className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${
+                usingSampleData
+                  ? "border-amber-500/30 bg-amber-500/10 text-amber-300"
+                  : "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+              }`}
+            >
+              {usingSampleData ? "Sample data" : "Live leads"}
             </span>
           </div>
           <h1 className="mt-2 text-3xl font-bold sm:text-4xl">Leads Overview</h1>
@@ -53,13 +79,24 @@ export default function AdminPage() {
             AI summary of what the customer needs, and the recommended next step
             for your team.
           </p>
+          {loadError && (
+            <p className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+              {loadError}
+            </p>
+          )}
+          {!dbConfigured && (
+            <p className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+              Connect <code className="text-amber-100">DATABASE_URL</code> to
+              save widget submissions and show live leads here.
+            </p>
+          )}
         </div>
 
         <div className="mb-10 grid gap-4 sm:grid-cols-3">
           <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
             <p className="text-sm text-slate-400">Total leads</p>
             <p className="mt-1 text-3xl font-bold text-white">
-              {sampleLeads.length}
+              {liveLeads.length}
             </p>
           </div>
           <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
@@ -78,11 +115,27 @@ export default function AdminPage() {
           Recent leads
         </h2>
 
-        <div className="space-y-5">
-          {sampleLeads.map((lead) => (
-            <LeadCard key={lead.id} lead={lead} />
-          ))}
-        </div>
+        {liveLeads.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-slate-700 bg-slate-900/40 px-6 py-12 text-center">
+            <p className="text-lg font-semibold text-white">No leads yet</p>
+            <p className="mt-2 text-sm text-slate-400">
+              Submit a test lead from the homepage widget. It will appear here
+              automatically.
+            </p>
+            <Link
+              href="/"
+              className="mt-6 inline-flex min-h-12 items-center justify-center rounded-xl bg-cyan-500 px-6 py-3 text-sm font-bold text-slate-950 transition-colors hover:bg-cyan-400"
+            >
+              Go to homepage widget
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-5">
+            {liveLeads.map((lead) => (
+              <LeadCard key={lead.id} lead={lead} />
+            ))}
+          </div>
+        )}
       </main>
     </div>
   );

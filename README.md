@@ -4,23 +4,23 @@
 
 It gives your website a floating assistant that captures visitor requests as leads, then shows business owners a dashboard with AI-style summaries and recommended follow-up actions.
 
-This repository is the **MVP demo**: a polished front-end you can show to business owners. No database, authentication, or real AI backend yet.
-
 ## What's included
 
 | Route | Description |
 |-------|-------------|
 | `/` | SaaS landing page with live lead-capture widget |
-| `/admin` | Sample business-owner dashboard (hardcoded demo leads) |
+| `/admin` | Owner dashboard — live leads when database is connected |
+| `POST /api/leads` | Saves widget submissions to Postgres |
 
-**Widget demo flow:** Click **Talk to AI Employee** → fill in contact details → see a thank-you confirmation.
+**Widget flow:** Click **Talk to AI Employee** → submit the form → lead appears in `/admin`.
 
 ## Tech stack
 
 - Next.js App Router
 - TypeScript
 - Tailwind CSS
-- Static demo data only (no backend)
+- Postgres (`postgres` package)
+- Resend (optional email notifications)
 
 ## Getting started
 
@@ -28,13 +28,42 @@ This repository is the **MVP demo**: a polished front-end you can show to busine
 
 ```bash
 npm install
+cp .env.example .env.local
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) for the landing page.
+Open [http://localhost:3000](http://localhost:3000).
 
-- Landing page: [http://localhost:3000](http://localhost:3000)
-- Admin preview: [http://localhost:3000/admin](http://localhost:3000/admin)
+## Phase 1 setup (live lead capture)
+
+### 1. Create a Postgres database
+
+Use any Postgres provider:
+
+- [Neon](https://neon.tech) (recommended with Vercel)
+- [Supabase](https://supabase.com)
+- [Vercel Postgres](https://vercel.com/storage/postgres)
+
+### 2. Run the schema
+
+Execute `scripts/init-db.sql` in your database SQL editor or CLI.
+
+### 3. Configure environment variables
+
+Copy `.env.example` to `.env.local` and set:
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `DATABASE_URL` | Yes | Postgres connection string |
+| `RESEND_API_KEY` | No | Sends email when a new lead arrives |
+| `OWNER_NOTIFICATION_EMAIL` | No | Where lead alerts are sent |
+| `RESEND_FROM_EMAIL` | No | Verified sender in Resend |
+
+### 4. Deploy to Vercel
+
+Add the same environment variables in your Vercel project settings, then redeploy.
+
+Without `DATABASE_URL`, the demo still works with sample data in `/admin`. The widget returns a friendly error until the database is connected.
 
 ## Scripts
 
@@ -45,6 +74,14 @@ npm run start  # Start production server
 npm run lint   # Run ESLint
 ```
 
+## Founder docs
+
+| File | Purpose |
+|------|---------|
+| `docs/customer-validation.md` | Demo script and validation questions |
+| `docs/pilot-outreach-messages.md` | Outreach templates |
+| `docs/validation-tracker.md` | Track conversations and signals |
+
 ## Deploy
 
-The project is configured for [Vercel](https://vercel.com). Push to GitHub and connect the repo — no extra environment variables are required for the demo.
+Push to GitHub and connect to [Vercel](https://vercel.com). Set `DATABASE_URL` (and optional Resend vars) in the Vercel dashboard.

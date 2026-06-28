@@ -1,8 +1,7 @@
 "use client";
 
 import { type FormEvent, useState } from "react";
-
-type Urgency = "Low" | "Medium" | "High";
+import type { Urgency } from "@/lib/lead-types";
 
 type LeadForm = {
   name: string;
@@ -11,6 +10,7 @@ type LeadForm = {
   serviceNeeded: string;
   urgency: Urgency;
   message: string;
+  website: string;
 };
 
 const initialForm: LeadForm = {
@@ -20,6 +20,7 @@ const initialForm: LeadForm = {
   serviceNeeded: "",
   urgency: "Medium",
   message: "",
+  website: "",
 };
 
 const inputClassName =
@@ -28,6 +29,8 @@ const inputClassName =
 export function WebsiteAssistant() {
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [form, setForm] = useState<LeadForm>(initialForm);
 
   function updateField(field: keyof LeadForm, value: string) {
@@ -37,9 +40,41 @@ export function WebsiteAssistant() {
     }));
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setIsSubmitted(true);
+    setSubmitError(null);
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          serviceNeeded: form.serviceNeeded,
+          urgency: form.urgency,
+          message: form.message,
+          website: form.website,
+        }),
+      });
+
+      const data = (await response.json()) as { error?: string };
+
+      if (!response.ok) {
+        setSubmitError(
+          data.error ?? "Unable to send your request. Please try again.",
+        );
+        return;
+      }
+
+      setIsSubmitted(true);
+    } catch {
+      setSubmitError("Network error. Please check your connection and try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   function handleClose() {
@@ -53,6 +88,7 @@ export function WebsiteAssistant() {
   function handleReset() {
     setForm(initialForm);
     setIsSubmitted(false);
+    setSubmitError(null);
   }
 
   return (
@@ -98,6 +134,19 @@ export function WebsiteAssistant() {
                 receives your details and an AI summary of your request.
               </p>
 
+              <div className="hidden" aria-hidden="true">
+                <label htmlFor="lead-website">Website</label>
+                <input
+                  id="lead-website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={form.website}
+                  onChange={(event) =>
+                    updateField("website", event.target.value)
+                  }
+                />
+              </div>
+
               <div>
                 <label htmlFor="lead-name" className="sr-only">
                   Your name
@@ -109,6 +158,7 @@ export function WebsiteAssistant() {
                   value={form.name}
                   onChange={(event) => updateField("name", event.target.value)}
                   className={inputClassName}
+                  disabled={isSubmitting}
                 />
               </div>
 
@@ -126,6 +176,7 @@ export function WebsiteAssistant() {
                     updateField("email", event.target.value)
                   }
                   className={inputClassName}
+                  disabled={isSubmitting}
                 />
               </div>
 
@@ -143,6 +194,7 @@ export function WebsiteAssistant() {
                     updateField("phone", event.target.value)
                   }
                   className={inputClassName}
+                  disabled={isSubmitting}
                 />
               </div>
 
@@ -159,6 +211,7 @@ export function WebsiteAssistant() {
                     updateField("serviceNeeded", event.target.value)
                   }
                   className={inputClassName}
+                  disabled={isSubmitting}
                 />
               </div>
 
@@ -176,6 +229,7 @@ export function WebsiteAssistant() {
                     updateField("urgency", event.target.value as Urgency)
                   }
                   className={inputClassName}
+                  disabled={isSubmitting}
                 >
                   <option>Low</option>
                   <option>Medium</option>
@@ -196,14 +250,22 @@ export function WebsiteAssistant() {
                     updateField("message", event.target.value)
                   }
                   className={`${inputClassName} min-h-24 resize-none`}
+                  disabled={isSubmitting}
                 />
               </div>
 
+              {submitError && (
+                <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                  {submitError}
+                </p>
+              )}
+
               <button
                 type="submit"
-                className="w-full min-h-12 rounded-xl bg-cyan-500 px-4 py-3.5 text-sm font-bold text-slate-950 transition-colors hover:bg-cyan-400"
+                disabled={isSubmitting}
+                className="w-full min-h-12 rounded-xl bg-cyan-500 px-4 py-3.5 text-sm font-bold text-slate-950 transition-colors hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Send my request
+                {isSubmitting ? "Sending..." : "Send my request"}
               </button>
             </form>
           ) : (
@@ -235,7 +297,8 @@ export function WebsiteAssistant() {
                   </ul>
                 </div>
                 <p className="mt-3 text-xs text-slate-500">
-                  Demo only — this test submission is not stored or emailed yet.
+                  The business owner has been notified and can view this lead in
+                  their dashboard.
                 </p>
               </div>
 

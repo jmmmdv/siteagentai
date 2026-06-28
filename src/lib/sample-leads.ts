@@ -1,21 +1,10 @@
-export type LeadStatus = "New" | "Contacted" | "Qualified" | "Closed";
+import type { Lead } from "@/lib/lead-types";
 
-export type SampleLead = {
-  id: string;
-  customerName: string;
-  email: string;
-  phone: string;
-  serviceNeeded: string;
-  urgency: "Low" | "Medium" | "High";
-  status: LeadStatus;
-  aiSummary: string;
-  recommendedAction: string;
-  submittedAt: string;
-};
+export type SampleLead = Lead;
 
-export const sampleLeads: SampleLead[] = [
+export const sampleLeads: Lead[] = [
   {
-    id: "1",
+    id: "sample-1",
     customerName: "Sarah Mitchell",
     email: "sarah.mitchell@gmail.com",
     phone: "(512) 555-0142",
@@ -29,7 +18,7 @@ export const sampleLeads: SampleLead[] = [
     submittedAt: "2 hours ago",
   },
   {
-    id: "2",
+    id: "sample-2",
     customerName: "James Rodriguez",
     email: "j.rodriguez@outlook.com",
     phone: "(512) 555-0287",
@@ -43,7 +32,7 @@ export const sampleLeads: SampleLead[] = [
     submittedAt: "Yesterday",
   },
   {
-    id: "3",
+    id: "sample-3",
     customerName: "Emily Chen",
     email: "emily.chen@yahoo.com",
     phone: "(512) 555-0391",
@@ -57,7 +46,7 @@ export const sampleLeads: SampleLead[] = [
     submittedAt: "3 days ago",
   },
   {
-    id: "4",
+    id: "sample-4",
     customerName: "Michael Thompson",
     email: "mthompson@workmail.com",
     phone: "(512) 555-0518",
@@ -71,7 +60,7 @@ export const sampleLeads: SampleLead[] = [
     submittedAt: "5 hours ago",
   },
   {
-    id: "5",
+    id: "sample-5",
     customerName: "Lisa Park",
     email: "lisa.park@gmail.com",
     phone: "(512) 555-0673",
