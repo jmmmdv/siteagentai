@@ -21,6 +21,7 @@ It gives your website a floating assistant that captures visitor requests as lea
 - Tailwind CSS
 - Postgres (`postgres` package)
 - Resend (optional email notifications)
+- OpenAI (optional GPT summaries — rule-based fallback)
 
 ## Getting started
 
@@ -58,8 +59,14 @@ Copy `.env.example` to `.env.local` and set:
 | `RESEND_API_KEY` | No | Sends email when a new lead arrives |
 | `OWNER_NOTIFICATION_EMAIL` | No | Where lead alerts are sent |
 | `RESEND_FROM_EMAIL` | No | Verified sender in Resend |
+| `OPENAI_API_KEY` | No | GPT-powered lead summaries |
+| `OPENAI_MODEL` | No | Defaults to `gpt-4o-mini` |
 
-### 4. Deploy to Vercel
+### 4. Enable AI summaries (optional)
+
+Add `OPENAI_API_KEY` to generate GPT summaries and recommended next actions for each new lead. If OpenAI is unavailable or not configured, SiteAgentAI falls back to rule-based summaries automatically.
+
+### 5. Deploy to Vercel
 
 Add the same environment variables in your Vercel project settings, then redeploy.
 
@@ -84,4 +91,4 @@ npm run lint   # Run ESLint
 
 ## Deploy
 
-Push to GitHub and connect to [Vercel](https://vercel.com). Set `DATABASE_URL` (and optional Resend vars) in the Vercel dashboard.
+Push to GitHub and connect to [Vercel](https://vercel.com). Set `DATABASE_URL`, optional Resend vars, and optional `OPENAI_API_KEY` in the Vercel dashboard.

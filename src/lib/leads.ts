@@ -1,7 +1,7 @@
+import { generateLeadSummary } from "@/lib/ai-summary";
 import { getDb, isDatabaseConfigured } from "@/lib/db";
 import { sendLeadNotificationEmail } from "@/lib/email";
 import { formatRelativeTime } from "@/lib/format-relative-time";
-import { buildLeadSummary } from "@/lib/lead-summary";
 import type { CreateLeadInput, Lead, LeadStatus, Urgency } from "@/lib/lead-types";
 
 type LeadRow = {
@@ -62,7 +62,7 @@ export async function getLeads(): Promise<Lead[]> {
 
 export async function createLead(input: CreateLeadInput): Promise<Lead> {
   const sql = getDb();
-  const { aiSummary, recommendedAction } = buildLeadSummary(input);
+  const { aiSummary, recommendedAction } = await generateLeadSummary(input);
 
   const rows = await sql<LeadRow[]>`
     INSERT INTO leads (

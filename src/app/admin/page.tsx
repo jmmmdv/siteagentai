@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LeadCard } from "@/components/LeadCard";
+import { isAiConfigured } from "@/lib/ai-summary";
 import { isDatabaseConfigured } from "@/lib/db";
 import { getLeads } from "@/lib/leads";
 import { sampleLeads } from "@/lib/sample-leads";
@@ -14,6 +15,7 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
   const dbConfigured = isDatabaseConfigured();
+  const aiConfigured = isAiConfigured();
   let liveLeads = sampleLeads;
   let usingSampleData = true;
   let loadError: string | null = null;
@@ -88,6 +90,19 @@ export default async function AdminPage() {
             <p className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
               Connect <code className="text-amber-100">DATABASE_URL</code> to
               save widget submissions and show live leads here.
+            </p>
+          )}
+          {dbConfigured && (
+            <p
+              className={`mt-4 rounded-xl border px-4 py-3 text-sm ${
+                aiConfigured
+                  ? "border-cyan-500/30 bg-cyan-500/10 text-cyan-200"
+                  : "border-slate-700 bg-slate-900/60 text-slate-400"
+              }`}
+            >
+              {aiConfigured
+                ? "AI summaries enabled — new leads use OpenAI for summary and next steps."
+                : "Rule-based summaries active — add OPENAI_API_KEY for GPT-powered summaries."}
             </p>
           )}
         </div>
